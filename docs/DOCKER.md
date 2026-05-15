@@ -30,18 +30,16 @@ The `docker-compose.yml` file located at the root of the project defines the req
 version: '3.8'
 
 services:
-  db:
+  mysql:
     image: mysql:8.0
     container_name: fpt_mysql
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: fpt_market_db
-      MYSQL_USER: fpt_user
-      MYSQL_PASSWORD: fpt_password
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: fpt_market
     ports:
       - "3306:3306"
     volumes:
-      - db_data:/var/lib/mysql
+      - mysql_data:/var/lib/mysql
     networks:
       - fpt_network
 
@@ -63,11 +61,12 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/fpt_market_db?useSSL=false&serverTimezone=UTC
-      - SPRING_DATASOURCE_USERNAME=fpt_user
-      - SPRING_DATASOURCE_PASSWORD=fpt_password
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/fpt_market?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
     depends_on:
-      - db
+      mysql:
+        condition: service_healthy
     networks:
       - fpt_network
 

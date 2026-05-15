@@ -28,11 +28,12 @@ These properties configure the Spring Boot application, database connections, se
 # ===============================
 # DATABASE CONFIGURATION (MySQL)
 # ===============================
-spring.datasource.url=jdbc:mysql://localhost:3306/fpt_market_db?useSSL=false&serverTimezone=UTC
+spring.datasource.url=jdbc:mysql://localhost:3306/fpt_market?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
 spring.datasource.username=root
-spring.datasource.password=dummy_db_password
+spring.datasource.password=12345678
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
+spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect
 
 # ===============================
 # JWT SECURITY
@@ -45,9 +46,9 @@ app.security.jwt.refresh-expiration=604800000 # 7 days in milliseconds
 # ===============================
 # CLOUDINARY (Image Hosting)
 # ===============================
-cloudinary.cloud-name=dummy_cloud_name
-cloudinary.api-key=dummy_api_key_12345
-cloudinary.api-secret=dummy_api_secret_abcde
+cloudinary.cloud-name=dqc4hufot
+cloudinary.api-key=971593235641448
+cloudinary.api-secret=sd1dC3FLr4MysWLF05IuCXuSqxk
 
 # ===============================
 # VNPAY INTEGRATION
@@ -62,8 +63,8 @@ vnpay.return-url=http://localhost:3000/checkout/vnpay-return
 # ===============================
 spring.mail.host=smtp.gmail.com
 spring.mail.port=587
-spring.mail.username=dummy_email@gmail.com
-spring.mail.password=dummy_app_password_abcd_efgh_ijkl
+spring.mail.username=sgoku4880@gmail.com
+spring.mail.password=khad shgf okke spwf
 spring.mail.properties.mail.smtp.auth=true
 spring.mail.properties.mail.smtp.starttls.enable=true
 ```
