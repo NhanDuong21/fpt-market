@@ -1,28 +1,44 @@
 // Empty wrapper functions for storage
 
 export const saveTokens = (accessToken, refreshToken) => {
-    // To be implemented
+    if (typeof window !== 'undefined') {
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
+    }
 };
 
 export const getAccessToken = () => {
-    // To be implemented
+    if (typeof window !== 'undefined') {
+        return localStorage.getItem('accessToken');
+    }
     return null;
 };
 
 export const getRefreshToken = () => {
-    // To be implemented
+    if (typeof window !== 'undefined') {
+        return localStorage.getItem('refreshToken');
+    }
     return null;
 };
 
 export const clearTokens = () => {
-    // To be implemented
+    if (typeof window !== 'undefined') {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('user');
+    }
 };
 
 export const saveUser = (user) => {
-    // To be implemented
+    if (typeof window !== 'undefined') {
+        localStorage.setItem('user', JSON.stringify(user));
+    }
 };
 
 export const getUser = () => {
-    // To be implemented
+    if (typeof window !== 'undefined') {
+        const userStr = localStorage.getItem('user');
+        if (userStr) return JSON.parse(userStr);
+    }
     return null;
 };

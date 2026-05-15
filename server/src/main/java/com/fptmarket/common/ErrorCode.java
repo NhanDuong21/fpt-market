@@ -6,7 +6,8 @@ public enum ErrorCode {
     NOT_FOUND("NOT_FOUND"),
     UNAUTHORIZED("UNAUTHORIZED"),
     FORBIDDEN("FORBIDDEN"),
-    BAD_REQUEST("BAD_REQUEST");
+    BAD_REQUEST("BAD_REQUEST"),
+    USER_ALREADY_EXISTS("USER_ALREADY_EXISTS");
 
     private final String code;
 

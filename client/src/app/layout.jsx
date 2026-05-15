@@ -1,4 +1,7 @@
-import './globals.css'
+import './globals.css';
+import { AuthProvider } from '../context/AuthContext';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export const metadata = {
   title: 'FPT-Market',
@@ -8,7 +11,12 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <AuthProvider>
+          {children}
+          <ToastContainer position="top-right" autoClose={3000} />
+        </AuthProvider>
+      </body>
     </html>
   )
 }
