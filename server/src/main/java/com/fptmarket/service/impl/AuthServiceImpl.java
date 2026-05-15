@@ -29,6 +29,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
@@ -62,6 +63,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public AuthResponse login(LoginRequest request) {
+        log.info("Attempting login for user: {}", request.getEmail());
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
@@ -71,7 +73,10 @@ public class AuthServiceImpl implements AuthService {
         String jwt = jwtTokenProvider.generateToken(authentication);
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new AppException("User not found", ErrorCode.NOT_FOUND.getCode()));
+                .orElseThrow(() -> {
+                    log.error("Authenticated user not found in database: {}", request.getEmail());
+                    return new AppException("User not found", ErrorCode.UNAUTHORIZED.getCode());
+                });
 
         if (user.getStatus() == Status.BANNED) {
             throw new AppException("User is banned", ErrorCode.FORBIDDEN.getCode());

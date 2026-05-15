@@ -20,7 +20,10 @@ public class JwtTokenProvider {
     private long jwtExpirationInMs;
 
     public String generateToken(Authentication authentication) {
-        CustomUserDetails userPrincipal = (CustomUserDetails) authentication.getPrincipal();
+        Object principal = authentication.getPrincipal();
+        if (!(principal instanceof CustomUserDetails userPrincipal)) {
+            throw new IllegalArgumentException("Unsupported principal type: " + principal.getClass());
+        }
 
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);

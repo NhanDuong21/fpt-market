@@ -2,6 +2,7 @@ package com.fptmarket.exception;
 
 import com.fptmarket.common.ApiResponse;
 import com.fptmarket.common.ErrorCode;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,11 +13,20 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(AppException.class)
     public ResponseEntity<ApiResponse<Void>> handleAppException(AppException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        log.error("AppException: {}", ex.getMessage());
+        HttpStatus status = switch (ex.getErrorCode()) {
+            case "UNAUTHORIZED" -> HttpStatus.UNAUTHORIZED;
+            case "FORBIDDEN" -> HttpStatus.FORBIDDEN;
+            case "NOT_FOUND" -> HttpStatus.NOT_FOUND;
+            case "USER_ALREADY_EXISTS" -> HttpStatus.BAD_REQUEST;
+            default -> HttpStatus.BAD_REQUEST;
+        };
+        return ResponseEntity.status(status)
                 .body(ApiResponse.error(ex.getMessage(), ex.getErrorCode()));
     }
 
@@ -50,6 +60,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleGeneralException(Exception ex) {
+        log.error("Unexpected error: ", ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.error("An unexpected error occurred: " + ex.getMessage(), ErrorCode.INTERNAL_SERVER_ERROR.getCode()));
     }
