@@ -2,12 +2,12 @@ import api from './api';
 
 const categoryService = {
     getAllCategories: async () => {
-        const response = await api.get('/categories');
+        const response = await api.get('/api/categories');
         return response.data;
     },
 
     getCategoryBySlug: async (slug) => {
-        const response = await api.get(`/categories/${slug}`);
+        const response = await api.get(`/api/categories/${slug}`);
         return response.data;
     }
 };

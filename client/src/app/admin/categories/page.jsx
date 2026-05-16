@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import adminService from '@/services/adminService';
 import categoryService from '@/services/categoryService';
 import { toast } from 'react-toastify';
+import CategoryForm from '@/components/admin/CategoryForm';
 
 export default function AdminCategoriesPage() {
     const [categories, setCategories] = useState([]);
@@ -22,7 +23,7 @@ export default function AdminCategoriesPage() {
             const data = await categoryService.getAllCategories();
             setCategories(data.data);
         } catch (error) {
-            toast.error('Failed to load categories');
+            toast.error(error.message);
         } finally {
             setLoading(false);
         }
@@ -43,7 +44,7 @@ export default function AdminCategoriesPage() {
             setFormData({ name: '', description: '' });
             fetchCategories();
         } catch (error) {
-            toast.error(error.response?.data?.message || 'Action failed');
+            toast.error(error.message);
         }
     };
 
@@ -60,7 +61,7 @@ export default function AdminCategoriesPage() {
             toast.success('Category deleted');
             fetchCategories();
         } catch (error) {
-            toast.error('Failed to delete category. Ensure no products are linked.');
+            toast.error(error.message);
         }
     };
 
@@ -128,44 +129,13 @@ export default function AdminCategoriesPage() {
             {/* Modal */}
             {isModalOpen && (
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                    <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl animate-in fade-in zoom-in duration-300">
-                        <h3 className="text-2xl font-bold text-gray-900 mb-6">{editingCategory ? 'Edit Category' : 'New Category'}</h3>
-                        <div className="space-y-4 mb-8">
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Name</label>
-                                <input
-                                    required
-                                    type="text"
-                                    value={formData.name}
-                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:bg-white focus:border-blue-500 outline-none transition-all"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Description</label>
-                                <textarea
-                                    value={formData.description}
-                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                    className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:bg-white focus:border-blue-500 outline-none transition-all min-h-[100px]"
-                                ></textarea>
-                            </div>
-                        </div>
-                        <div className="flex gap-3">
-                            <button 
-                                type="button"
-                                onClick={() => setIsModalOpen(false)}
-                                className="flex-1 py-4 bg-gray-100 text-gray-600 font-bold rounded-2xl hover:bg-gray-200 transition-all"
-                            >
-                                Cancel
-                            </button>
-                            <button 
-                                type="submit"
-                                className="flex-1 py-4 bg-blue-600 text-white font-bold rounded-2xl shadow-lg hover:bg-blue-700 transition-all"
-                            >
-                                {editingCategory ? 'Update' : 'Create'}
-                            </button>
-                        </div>
-                    </form>
+                    <CategoryForm 
+                        formData={formData}
+                        setFormData={setFormData}
+                        onSubmit={handleSubmit}
+                        onCancel={() => setIsModalOpen(false)}
+                        isEditing={!!editingCategory}
+                    />
                 </div>
             )}
         </div>

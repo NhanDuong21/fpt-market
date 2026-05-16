@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import adminService from '@/services/adminService';
 import ProductStatusBadge from '@/components/product/ProductStatusBadge';
 import { toast } from 'react-toastify';
+import RejectProductModal from '@/components/admin/RejectProductModal';
 
 export default function AdminProductsPage() {
     const [products, setProducts] = useState([]);
@@ -24,7 +25,7 @@ export default function AdminProductsPage() {
             setProducts(data.data.content);
         } catch (error) {
             console.error('Failed to fetch products', error);
-            toast.error('Failed to load products');
+            toast.error(error.message);
         } finally {
             setLoading(false);
         }
@@ -36,7 +37,7 @@ export default function AdminProductsPage() {
             toast.success('Product approved');
             fetchProducts();
         } catch (error) {
-            toast.error('Failed to approve product');
+            toast.error(error.message);
         }
     };
 
@@ -49,7 +50,7 @@ export default function AdminProductsPage() {
             setRejectReason('');
             fetchProducts();
         } catch (error) {
-            toast.error('Failed to reject product');
+            toast.error(error.message);
         }
     };
 
@@ -142,31 +143,12 @@ export default function AdminProductsPage() {
 
             {/* Reject Modal */}
             {rejectingId && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl animate-in fade-in zoom-in duration-300">
-                        <h3 className="text-xl font-bold text-gray-900 mb-4">Reject Product</h3>
-                        <textarea
-                            value={rejectReason}
-                            onChange={(e) => setRejectReason(e.target.value)}
-                            placeholder="Reason for rejection..."
-                            className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:bg-white focus:border-blue-500 outline-none transition-all mb-6 min-h-[120px]"
-                        ></textarea>
-                        <div className="flex gap-3">
-                            <button 
-                                onClick={() => setRejectingId(null)}
-                                className="flex-1 py-3 bg-gray-100 text-gray-600 font-bold rounded-xl hover:bg-gray-200 transition-all"
-                            >
-                                Cancel
-                            </button>
-                            <button 
-                                onClick={handleReject}
-                                className="flex-1 py-3 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-all shadow-lg shadow-red-200"
-                            >
-                                Confirm Rejection
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <RejectProductModal 
+                    rejectReason={rejectReason}
+                    setRejectReason={setRejectReason}
+                    onConfirm={handleReject}
+                    onCancel={() => setRejectingId(null)}
+                />
             )}
         </div>
     );

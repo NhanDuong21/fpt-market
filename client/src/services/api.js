@@ -83,6 +83,8 @@ api.interceptors.response.use(
       }
     }
 
+    const message = error.response?.data?.message || error.message || 'An unexpected error occurred';
+    error.message = message;
     return Promise.reject(error);
   }
 );

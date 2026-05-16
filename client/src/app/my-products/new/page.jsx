@@ -33,7 +33,7 @@ export default function NewProductPage() {
             router.push('/my-products');
         } catch (error) {
             console.error('Failed to create product', error);
-            toast.error(error.response?.data?.message || 'Failed to create product');
+            toast.error(error.message);
         } finally {
             setLoading(false);
         }

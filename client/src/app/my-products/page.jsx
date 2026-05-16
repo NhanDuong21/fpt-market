@@ -20,7 +20,7 @@ export default function MyProductsPage() {
             setProducts(data.data.content);
         } catch (error) {
             console.error('Failed to fetch my products', error);
-            toast.error('Failed to load your products');
+            toast.error(error.message);
         } finally {
             setLoading(false);
         }
@@ -34,7 +34,7 @@ export default function MyProductsPage() {
             toast.success('Product deleted successfully');
             fetchMyProducts();
         } catch (error) {
-            toast.error('Failed to delete product');
+            toast.error(error.message);
         }
     };
 
