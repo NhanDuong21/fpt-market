@@ -70,3 +70,20 @@ export default function ProductList() {
     // ... render
 }
 ```
+
+## Component Registry
+
+### Layout Components (`src/components/layout/`)
+- **`Header.jsx`**: Red-themed sticky header containing logo, search bar, and auth actions.
+- **`MainNavigation.jsx`**: Horizontal navigation bar for quick category access.
+- **`Footer.jsx`**: Standard 4-column footer with branding and support links.
+
+### Home Components (`src/components/home/`)
+- **`HeroBanner.jsx`**: Impactful visual section with primary and secondary promotions.
+- **`TrustStrip.jsx`**: Displays core value propositions (USPs) with icons.
+- **`CategoryShortcutGrid.jsx`**: Visual grid for top-level category navigation.
+- **`HomeProductSection.jsx`**: Reusable wrapper for displaying product rows (Latest, Featured, etc.).
+- **`HomeCtaSection.jsx`**: Full-width call-to-action for sellers.
+
+### Common Components (`src/components/common/`)
+- **`SearchBar.jsx`**: Reusable search input with validation and routing logic.

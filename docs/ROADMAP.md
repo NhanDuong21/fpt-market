@@ -6,8 +6,8 @@ The development of FPT-Market is divided into strategic phases to ensure a stabl
 *Focus: Establishing the monorepo architecture and core e-commerce functionalities.*
 
 - [x] Monorepo setup (`/client`, `/server`, `/docs`).
-- [ ] Implement robust Authentication & JWT lifecycle.
-- [ ] Build Product Catalog and Category navigation.
+- [x] Implement robust Authentication & JWT lifecycle.
+- [x] Build Product Catalog and Category navigation.
 - [ ] Implement Cart and Order Processing (with Snapshot pattern).
 - [ ] Integrate VNPay Sandbox for checkout.
 - [ ] Deploy MVP to Vercel (Frontend) and Render/Railway (Backend).
@@ -19,15 +19,15 @@ The development of FPT-Market is divided into strategic phases to ensure a stabl
 - [ ] Momo E-Wallet payment integration.
 - [ ] Advanced product search with Elasticsearch (or robust SQL Full-Text).
 - [ ] Wishlist functionality.
-- [ ] Seller Portal: Allow users to submit products for admin approval.
+- [x] Seller Portal: Allow users to submit products for admin approval.
 
 ## Phase 3: Analytics and Optimization
 *Focus: Data-driven insights and performance scaling.*
 
-- [ ] Comprehensive Admin Dashboard with charts and metrics.
-- [ ] Implement Redis caching for high-traffic endpoints (e.g., category trees, top products).
+- [x] Comprehensive Admin Dashboard (Basic CRUD and Approval workflow).
+- [ ] Implement Redis caching for high-traffic endpoints.
 - [ ] Automated inventory alerts and reporting.
-- [ ] Mobile-responsive layout refinement and Progressive Web App (PWA) configuration.
+- [x] Mobile-responsive layout refinement (Red/White theme redesign).
 
 ## Phase 4: Microservices Transition (Future Consideration)
 *Focus: Breaking down the monolith if scale demands.*

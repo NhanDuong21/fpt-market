@@ -1,0 +1,106 @@
+'use client';
+
+import Link from 'next/link';
+import { useAuth } from '@/context/AuthContext';
+import SearchBar from '@/components/common/SearchBar';
+import { ShoppingCart, User, LogOut, PlusCircle, LayoutDashboard, Settings } from 'lucide-react';
+import { useState } from 'react';
+
+export default function Header() {
+    const { user, logout } = useAuth();
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+    return (
+        <header className="sticky top-0 z-50 bg-red-600 shadow-md">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex items-center justify-between h-16 gap-4">
+                    {/* Logo */}
+                    <Link href="/" className="flex-shrink-0 flex items-center">
+                        <span className="text-2xl font-black text-white tracking-tighter">FPT-MARKET</span>
+                    </Link>
+
+                    {/* Search Bar - Hidden on mobile, but let's keep it responsive */}
+                    <div className="hidden md:flex flex-grow justify-center max-w-2xl">
+                        <SearchBar />
+                    </div>
+
+                    {/* Right Side Actions */}
+                    <div className="flex items-center gap-2 sm:gap-4">
+                        {/* Cart */}
+                        <Link href="/cart" className="p-2 text-white hover:bg-red-700 rounded-full transition-all relative">
+                            <ShoppingCart className="w-6 h-6" />
+                            <span className="absolute top-1 right-1 w-4 h-4 bg-white text-red-600 text-[10px] font-bold rounded-full flex items-center justify-center">0</span>
+                        </Link>
+
+                        {/* Sell Button */}
+                        <Link 
+                            href="/my-products/new" 
+                            className="hidden sm:flex items-center gap-2 px-4 py-2 bg-white text-red-600 font-bold rounded-xl shadow-sm hover:bg-gray-100 transition-all text-sm"
+                        >
+                            <PlusCircle className="w-4 h-4" />
+                            Đăng bán
+                        </Link>
+
+                        {/* Auth Block */}
+                        {user ? (
+                            <div className="relative">
+                                <button 
+                                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                                    className="flex items-center gap-2 p-1 pl-3 bg-red-700 text-white rounded-full hover:bg-red-800 transition-all border border-red-500"
+                                >
+                                    <span className="hidden lg:block text-xs font-semibold">{user.fullName}</span>
+                                    <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-red-600">
+                                        <User className="w-5 h-5" />
+                                    </div>
+                                </button>
+
+                                {isMenuOpen && (
+                                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden py-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                                        <div className="px-4 py-3 border-b border-gray-50">
+                                            <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Tài khoản</p>
+                                            <p className="text-sm font-bold text-gray-900 truncate">{user.email}</p>
+                                        </div>
+                                        <Link href="/profile" className="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 transition-all">
+                                            <User className="w-4 h-4" /> Trang cá nhân
+                                        </Link>
+                                        <Link href="/my-products" className="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 transition-all">
+                                            <LayoutDashboard className="w-4 h-4" /> Quản lý tin đăng
+                                        </Link>
+                                        {user.role === 'ADMIN' && (
+                                            <Link href="/admin" className="flex items-center gap-3 px-4 py-3 text-sm text-red-600 font-bold hover:bg-red-50 transition-all">
+                                                <Settings className="w-4 h-4" /> Admin Panel
+                                            </Link>
+                                        )}
+                                        <button 
+                                            onClick={logout}
+                                            className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-red-50 hover:text-red-600 transition-all border-t border-gray-50 mt-1"
+                                        >
+                                            <LogOut className="w-4 h-4" /> Đăng xuất
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <div className="flex items-center gap-2">
+                                <Link href="/login" className="px-4 py-2 text-white font-bold text-sm hover:text-red-100 transition-all">
+                                    Đăng nhập
+                                </Link>
+                                <Link 
+                                    href="/register" 
+                                    className="px-4 py-2 bg-red-700 text-white font-bold rounded-xl border border-red-500 hover:bg-red-800 transition-all text-sm"
+                                >
+                                    Đăng ký
+                                </Link>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+            
+            {/* Mobile Search Bar */}
+            <div className="md:hidden px-4 pb-3">
+                <SearchBar />
+            </div>
+        </header>
+    );
+}

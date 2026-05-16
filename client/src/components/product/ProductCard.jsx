@@ -21,22 +21,22 @@ export default function ProductCard({ product }) {
                 </div>
             </Link>
             <div className="p-4 flex flex-col flex-grow">
-                <div className="text-xs text-blue-600 font-medium mb-1 uppercase tracking-wider">
+                <div className="text-[10px] text-red-600 font-black mb-1 uppercase tracking-[0.2em]">
                     {category?.name}
                 </div>
-                <Link href={`/products/${slug}`} className="text-gray-900 font-semibold mb-2 line-clamp-2 hover:text-blue-600 transition-colors">
+                <Link href={`/products/${slug}`} className="text-gray-900 font-bold mb-2 line-clamp-2 hover:text-red-600 transition-colors leading-snug">
                     {name}
                 </Link>
                 <div className="mt-auto flex items-center justify-between">
-                    <span className="text-lg font-bold text-gray-900">
+                    <span className="text-xl font-black text-red-600">
                         ${price.toLocaleString()}
                     </span>
                     <Link 
                         href={`/products/${slug}`}
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        className="p-2 text-red-600 hover:bg-red-50 rounded-xl transition-all hover:translate-x-1"
                     >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                         </svg>
                     </Link>
                 </div>

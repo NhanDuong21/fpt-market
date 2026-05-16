@@ -1,14 +1,39 @@
-export default function Home() {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-gray-50">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold text-blue-600 mb-4">
-          Welcome to FPT-Market Phase 1
-        </h1>
-        <p className="text-lg text-gray-700">
-          Frontend and Backend scaffolding is complete.
-        </p>
-      </div>
-    </main>
-  );
+'use client';
+
+import HeroBanner from '@/components/home/HeroBanner';
+import CategoryShortcutGrid from '@/components/home/CategoryShortcutGrid';
+import TrustStrip from '@/components/home/TrustStrip';
+import HomeProductSection from '@/components/home/HomeProductSection';
+import HomeCtaSection from '@/components/home/HomeCtaSection';
+
+export default function HomePage() {
+    return (
+        <div className="space-y-0">
+            {/* Hero Section */}
+            <HeroBanner />
+
+            {/* Trust Highlights */}
+            <TrustStrip />
+
+            {/* Popular Categories */}
+            <CategoryShortcutGrid />
+
+            {/* Latest Products Section */}
+            <HomeProductSection 
+                title="Sản phẩm mới đăng" 
+                subtitle="Những món đồ vừa được sinh viên FPT đăng bán"
+                params={{ size: 8, sort: 'createdAt,desc' }}
+            />
+
+            {/* Textbooks Section */}
+            <HomeProductSection 
+                title="Giáo trình nổi bật" 
+                subtitle="Tiết kiệm chi phí học tập với giáo trình cũ"
+                params={{ size: 4, categoryId: 1, sort: 'createdAt,desc' }}
+            />
+
+            {/* CTA Section */}
+            <HomeCtaSection />
+        </div>
+    );
 }
