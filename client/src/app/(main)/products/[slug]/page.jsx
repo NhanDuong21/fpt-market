@@ -7,7 +7,7 @@ import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'react-toastify';
 import Button from '@/components/common/Button';
-import Link from 'next/link';
+import ProductImageGallery from '@/components/product/ProductImageGallery';
 
 export default function ProductDetailsPage() {
     const { slug } = useParams();
@@ -16,7 +16,6 @@ export default function ProductDetailsPage() {
     const { user } = useAuth();
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [activeImage, setActiveImage] = useState('');
     const [quantity, setQuantity] = useState(1);
     const [adding, setAdding] = useState(false);
 
@@ -28,9 +27,6 @@ export default function ProductDetailsPage() {
         try {
             const data = await productService.getProductBySlug(slug);
             setProduct(data.data);
-            if (data.data.images && data.data.images.length > 0) {
-                setActiveImage(data.data.images[0]);
-            }
         } catch (error) {
             console.error('Failed to fetch product', error);
             toast.error('Không tìm thấy sản phẩm');
@@ -40,6 +36,7 @@ export default function ProductDetailsPage() {
     };
 
     const handleAddToCart = async () => {
+        // ... (rest of the logic remains same)
         if (!user) {
             toast.error('Vui lòng đăng nhập để thêm vào giỏ hàng');
             router.push('/login');
@@ -47,7 +44,6 @@ export default function ProductDetailsPage() {
         }
 
         if (user.id === product.user?.id) {
-            // This is already handled in UI but safety first
             toast.error('Bạn không thể mua sản phẩm của chính mình');
             return;
         }
@@ -87,32 +83,13 @@ export default function ProductDetailsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
                 {/* Left: Image Gallery */}
-                <div className="space-y-6">
-                    <div className="aspect-square rounded-[2.5rem] overflow-hidden bg-white border-4 border-white shadow-2xl shadow-gray-200 relative group">
-                        <img 
-                            src={activeImage || 'https://via.placeholder.com/800x800?text=No+Image'} 
-                            alt={product.name}
-                            className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500"
-                        />
-                        {isOutOfStock && (
-                            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center">
-                                <span className="bg-white text-gray-900 px-8 py-3 rounded-2xl font-black text-2xl uppercase tracking-widest shadow-2xl">Hết hàng</span>
-                            </div>
-                        )}
-                    </div>
-                    <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-                        {product.images?.map((img, i) => (
-                            <button
-                                key={i}
-                                onClick={() => setActiveImage(img)}
-                                className={`flex-shrink-0 w-28 h-28 rounded-2xl overflow-hidden border-4 transition-all duration-300 ${
-                                    activeImage === img ? 'border-red-600 shadow-xl scale-95' : 'border-white shadow-sm opacity-60 hover:opacity-100 hover:scale-105'
-                                }`}
-                            >
-                                <img src={img} className="w-full h-full object-cover" alt="" />
-                            </button>
-                        ))}
-                    </div>
+                <div className="relative">
+                    <ProductImageGallery images={product.images} productName={product.name} />
+                    {isOutOfStock && (
+                        <div className="absolute top-0 left-0 w-full aspect-square rounded-[2.5rem] bg-black/40 backdrop-blur-sm flex items-center justify-center pointer-events-none z-10">
+                            <span className="bg-white text-gray-900 px-8 py-3 rounded-2xl font-black text-2xl uppercase tracking-widest shadow-2xl">Hết hàng</span>
+                        </div>
+                    )}
                 </div>
 
                 {/* Right: Details */}

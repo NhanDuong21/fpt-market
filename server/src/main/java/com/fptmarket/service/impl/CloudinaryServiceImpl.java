@@ -20,15 +20,15 @@ public class CloudinaryServiceImpl implements CloudinaryService {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Map<String, Object> uploadFile(MultipartFile file) throws IOException {
-        return cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
-                "folder", "fpt-market",
+    public Map<String, Object> uploadImage(MultipartFile file) throws IOException {
+        return (Map<String, Object>) cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
+                "folder", "fpt-market/products",
                 "resource_type", "auto"
         ));
     }
 
     @Override
-    public void deleteFile(String publicId) throws IOException {
+    public void deleteImage(String publicId) throws IOException {
         cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
     }
 }

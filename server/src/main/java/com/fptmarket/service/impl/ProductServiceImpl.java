@@ -95,7 +95,7 @@ public class ProductServiceImpl implements ProductService {
         if (images != null && !images.isEmpty()) {
             for (MultipartFile file : images) {
                 try {
-                    Map<String, Object> uploadResult = cloudinaryService.uploadFile(file);
+                    Map<String, Object> uploadResult = cloudinaryService.uploadImage(file);
                     String url = (String) uploadResult.get("secure_url");
                     String publicId = (String) uploadResult.get("public_id");
                     
@@ -137,7 +137,7 @@ public class ProductServiceImpl implements ProductService {
         if (images != null && !images.isEmpty()) {
             for (MultipartFile file : images) {
                 try {
-                    Map<String, Object> uploadResult = cloudinaryService.uploadFile(file);
+                    Map<String, Object> uploadResult = cloudinaryService.uploadImage(file);
                     String url = (String) uploadResult.get("secure_url");
                     String publicId = (String) uploadResult.get("public_id");
                     
@@ -172,7 +172,7 @@ public class ProductServiceImpl implements ProductService {
         for (ProductImage image : product.getImages()) {
             if (image.getPublicId() != null) {
                 try {
-                    cloudinaryService.deleteFile(image.getPublicId());
+                    cloudinaryService.deleteImage(image.getPublicId());
                 } catch (IOException e) {
                     log.warn("Failed to delete image from Cloudinary: {}", image.getPublicId());
                 }

@@ -10,6 +10,10 @@ export default function ProductCard({ product }) {
                 <img 
                     src={mainImage} 
                     alt={name} 
+                    onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = 'https://via.placeholder.com/400x300?text=Image+Not+Found';
+                    }}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
                 <div className="absolute top-2 left-2">
