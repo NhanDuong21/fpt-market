@@ -20,15 +20,7 @@ Every HTTP response (both success and error) MUST adhere to the following JSON s
 
 ### 1. Authentication (Login)
 
-**POST** `/api/v1/auth/login`
-
-**Request:**
-```json
-{
-  "email": "user@example.com",
-  "password": "securepassword123"
-}
-```
+**POST** `/api/auth/login`
 
 **Response (Success - 200 OK):**
 ```json
@@ -36,108 +28,73 @@ Every HTTP response (both success and error) MUST adhere to the following JSON s
   "success": true,
   "message": "Login successful",
   "data": {
-    "accessToken": "eyJhbG... (15-min expiry)",
-    "refreshToken": "def456... (7-day expiry)",
+    "accessToken": "eyJhbG...",
+    "refreshToken": "def456...",
     "user": {
       "id": 1,
       "email": "user@example.com",
       "role": "USER"
     }
-  },
-  "timestamp": 1715690000,
-  "errorCode": null
+  }
 }
 ```
 
-### 2. User Profile
+### 2. Categories (Public)
 
-**GET** `/api/v1/users/profile`
-*Headers: Authorization: Bearer <accessToken>*
+**GET** `/api/categories`
+- Fetches all available categories.
 
-**Response (Success - 200 OK):**
-```json
-{
-  "success": true,
-  "message": "Profile retrieved successfully",
-  "data": {
-    "id": 1,
-    "email": "user@example.com",
-    "fullName": "John Doe",
-    "phoneNumber": "0123456789"
-  },
-  "timestamp": 1715690050,
-  "errorCode": null
-}
-```
+**GET** `/api/categories/{slug}`
+- Fetches details of a specific category by slug.
 
-### 3. Product Pagination
+### 3. Products (Public)
 
-**GET** `/api/v1/products?page=0&size=12`
-*Note: Default pagination size is 12.*
+**GET** `/api/products`
+- **Params**: `page`, `size`, `keyword`, `categoryId`, `minPrice`, `maxPrice`, `condition`, `sort`.
+- Returns only **APPROVED** products.
 
-**Response (Success - 200 OK):**
-```json
-{
-  "success": true,
-  "message": "Products retrieved successfully",
-  "data": {
-    "content": [
-      {
-        "id": 101,
-        "name": "Mechanical Keyboard",
-        "price": 150.00,
-        "imageUrl": "https://..."
-      }
-      // ... up to 11 more items
-    ],
-    "pageNumber": 0,
-    "pageSize": 12,
-    "totalElements": 45,
-    "totalPages": 4,
-    "isLast": false
-  },
-  "timestamp": 1715690100,
-  "errorCode": null
-}
-```
+**GET** `/api/products/{slug}`
+- Fetches full details of a specific product.
 
-### 4. Order Management
+### 4. Product Management (User)
 
-**POST** `/api/v1/orders`
-*Headers: Authorization: Bearer <accessToken>*
+**POST** `/api/products`
+- **Headers**: `Content-Type: multipart/form-data`
+- **Parts**:
+    - `product`: JSON string of `ProductRequest`.
+    - `images`: Array of files.
 
-**Request:**
-```json
-{
-  "shippingAddress": "123 Main St, City",
-  "paymentProvider": "VNPAY"
-}
-```
+**PUT** `/api/products/{id}`
+- **Headers**: `Content-Type: multipart/form-data`
+- Updates an existing product (resets status to PENDING).
 
-**Response (Success - 201 Created):**
-```json
-{
-  "success": true,
-  "message": "Order created successfully",
-  "data": {
-    "orderId": 505,
-    "totalAmount": 150.00,
-    "paymentUrl": "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?..."
-  },
-  "timestamp": 1715690200,
-  "errorCode": null
-}
-```
+**DELETE** `/api/products/{id}`
+- Deletes a product owned by the user.
 
-### 5. Error Example (Token Expired)
+**GET** `/api/products/me`
+- Returns products listed by the currently authenticated user.
 
-**Response (Error - 401 Unauthorized):**
-```json
-{
-  "success": false,
-  "message": "Access token has expired",
-  "data": null,
-  "timestamp": 1715690300,
-  "errorCode": "AUTH_TOKEN_EXPIRED"
-}
-```
+### 5. Admin Operations
+
+**POST** `/api/admin/categories`
+- Creates a new category.
+
+**PUT** `/api/admin/categories/{id}`
+- Updates a category.
+
+**DELETE** `/api/admin/categories/{id}`
+- Deletes a category.
+
+**GET** `/api/admin/products`
+- **Params**: `status` (PENDING, APPROVED, REJECTED, etc.)
+- Returns all products regardless of owner.
+
+**PUT** `/api/admin/products/{id}/approve`
+- Approves a PENDING product.
+
+**PUT** `/api/admin/products/{id}/reject`
+- **Body**: `{"rejectReason": "string"}`
+- Rejects a PENDING product.
+
+**PUT** `/api/admin/products/{id}/hide`
+- Hides an APPROVED product from public view.
