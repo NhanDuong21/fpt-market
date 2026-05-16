@@ -1,16 +1,11 @@
 package com.fptmarket.dto.response;
 
-import com.fptmarket.entity.ConditionType;
-import com.fptmarket.entity.ProductStatus;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-
+import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import com.fptmarket.entity.ConditionType;
+import com.fptmarket.entity.ProductStatus;
 
 @Getter
 @Setter
