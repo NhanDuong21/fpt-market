@@ -3,13 +3,14 @@ import { NextResponse } from 'next/server';
 export function middleware(request) {
   const accessToken = request.cookies.get('accessToken')?.value;
 
-  const protectedRoutes = ['/profile', '/cart', '/my-orders'];
+  const protectedRoutes = ['/profile', '/cart', '/my-orders', '/admin', '/my-products'];
   const isProtectedRoute = protectedRoutes.some((route) =>
     request.nextUrl.pathname.startsWith(route)
   );
 
   if (isProtectedRoute && !accessToken) {
     const loginUrl = new URL('/login', request.url);
+    loginUrl.searchParams.set('redirect', request.nextUrl.pathname);
     return NextResponse.redirect(loginUrl);
   }
 
