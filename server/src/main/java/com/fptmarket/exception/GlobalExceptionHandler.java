@@ -46,8 +46,12 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(errorMessage, ErrorCode.VALIDATION_ERROR.getCode()));
     }
 
-    @ExceptionHandler(org.springframework.security.core.AuthenticationException.class)
-    public ResponseEntity<ApiResponse<Void>> handleAuthenticationException(org.springframework.security.core.AuthenticationException ex) {
+    @ExceptionHandler({
+        org.springframework.security.authentication.BadCredentialsException.class,
+        org.springframework.security.authentication.InternalAuthenticationServiceException.class
+    })
+    public ResponseEntity<ApiResponse<Void>> handleAuthenticationException(Exception ex) {
+        log.error("Authentication failed: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(ApiResponse.error("Invalid email or password", ErrorCode.UNAUTHORIZED.getCode()));
     }
