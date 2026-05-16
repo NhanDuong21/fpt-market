@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CategoryController {
 
-    private final CategoryService categoryService;
+    private final CategoryService categoryService = null;
 
     @GetMapping
     public ApiResponse<List<CategoryResponse>> getAllCategories() {

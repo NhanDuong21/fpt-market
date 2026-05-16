@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminProductController {
 
-    private final ProductService productService;
+    private final ProductService productService = null;
 
     @GetMapping
     public ApiResponse<Page<ProductResponse>> getAllProducts(

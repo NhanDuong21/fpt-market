@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminCategoryController {
 
-    private final CategoryService categoryService;
+    private final CategoryService categoryService = null;
 
     @PostMapping
     public ApiResponse<CategoryResponse> createCategory(@Valid @RequestBody CategoryRequest request) {
