@@ -3,7 +3,6 @@ package com.fptmarket.controller;
 import com.fptmarket.common.ApiResponse;
 import com.fptmarket.dto.response.CategoryResponse;
 import com.fptmarket.service.CategoryService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,10 +12,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/categories")
-@RequiredArgsConstructor
 public class CategoryController {
 
-    private final CategoryService categoryService = null;
+    private final CategoryService categoryService;
+
+    public CategoryController(CategoryService categoryService) {
+        this.categoryService = categoryService;
+    }
 
     @GetMapping
     public ApiResponse<List<CategoryResponse>> getAllCategories() {

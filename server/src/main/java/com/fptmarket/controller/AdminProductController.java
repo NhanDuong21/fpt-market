@@ -6,7 +6,6 @@ import com.fptmarket.dto.response.ProductResponse;
 import com.fptmarket.entity.ProductStatus;
 import com.fptmarket.service.ProductService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,11 +15,14 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/admin/products")
-@RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminProductController {
 
-    private final ProductService productService = null;
+    private final ProductService productService;
+
+    public AdminProductController(ProductService productService) {
+        this.productService = productService;
+    }
 
     @GetMapping
     public ApiResponse<Page<ProductResponse>> getAllProducts(

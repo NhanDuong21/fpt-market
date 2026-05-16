@@ -14,7 +14,6 @@ import com.fptmarket.repository.UserRepository;
 import com.fptmarket.repository.specification.ProductSpecification;
 import com.fptmarket.service.CloudinaryService;
 import com.fptmarket.service.ProductService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +27,6 @@ import java.io.IOException;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class ProductServiceImpl implements ProductService {
 
@@ -38,6 +36,20 @@ public class ProductServiceImpl implements ProductService {
     private final ProductImageRepository productImageRepository;
     private final ProductMapper productMapper;
     private final CloudinaryService cloudinaryService;
+
+    public ProductServiceImpl(ProductRepository productRepository, 
+                              CategoryRepository categoryRepository, 
+                              UserRepository userRepository, 
+                              ProductImageRepository productImageRepository, 
+                              ProductMapper productMapper, 
+                              CloudinaryService cloudinaryService) {
+        this.productRepository = productRepository;
+        this.categoryRepository = categoryRepository;
+        this.userRepository = userRepository;
+        this.productImageRepository = productImageRepository;
+        this.productMapper = productMapper;
+        this.cloudinaryService = cloudinaryService;
+    }
 
     @Override
     public Page<ProductResponse> getAllApprovedProducts(

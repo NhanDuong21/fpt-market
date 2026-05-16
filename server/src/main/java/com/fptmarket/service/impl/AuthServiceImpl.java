@@ -14,7 +14,6 @@ import com.fptmarket.repository.RefreshTokenRepository;
 import com.fptmarket.repository.UserRepository;
 import com.fptmarket.security.JwtTokenProvider;
 import com.fptmarket.service.AuthService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,7 +28,6 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class AuthServiceImpl implements AuthService {
 
@@ -41,6 +39,18 @@ public class AuthServiceImpl implements AuthService {
 
     @Value("${jwt.refresh-token-expiration}")
     private long refreshTokenDurationMs;
+
+    public AuthServiceImpl(UserRepository userRepository, 
+                           RefreshTokenRepository refreshTokenRepository, 
+                           PasswordEncoder passwordEncoder, 
+                           AuthenticationManager authenticationManager, 
+                           JwtTokenProvider jwtTokenProvider) {
+        this.userRepository = userRepository;
+        this.refreshTokenRepository = refreshTokenRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
+        this.jwtTokenProvider = jwtTokenProvider;
+    }
 
     @Override
     @Transactional

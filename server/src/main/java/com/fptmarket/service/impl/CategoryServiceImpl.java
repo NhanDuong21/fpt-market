@@ -8,7 +8,6 @@ import com.fptmarket.common.ErrorCode;
 import com.fptmarket.mapper.CategoryMapper;
 import com.fptmarket.repository.CategoryRepository;
 import com.fptmarket.service.CategoryService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,11 +15,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
+
+    public CategoryServiceImpl(CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
+        this.categoryRepository = categoryRepository;
+        this.categoryMapper = categoryMapper;
+    }
 
     @Override
     public List<CategoryResponse> getAllCategories() {

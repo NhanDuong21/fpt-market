@@ -5,17 +5,19 @@ import com.fptmarket.dto.request.CategoryRequest;
 import com.fptmarket.dto.response.CategoryResponse;
 import com.fptmarket.service.CategoryService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/admin/categories")
-@RequiredArgsConstructor
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminCategoryController {
 
-    private final CategoryService categoryService = null;
+    private final CategoryService categoryService;
+
+    public AdminCategoryController(CategoryService categoryService) {
+        this.categoryService = categoryService;
+    }
 
     @PostMapping
     public ApiResponse<CategoryResponse> createCategory(@Valid @RequestBody CategoryRequest request) {

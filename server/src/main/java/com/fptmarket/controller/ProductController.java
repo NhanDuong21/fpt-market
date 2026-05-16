@@ -5,7 +5,6 @@ import com.fptmarket.dto.request.ProductRequest;
 import com.fptmarket.dto.response.ProductResponse;
 import com.fptmarket.service.ProductService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,10 +17,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
-@RequiredArgsConstructor
 public class ProductController {
 
-    private final ProductService productService = null;
+    private final ProductService productService;
+
+    public ProductController(ProductService productService) {
+        this.productService = productService;
+    }
 
     @GetMapping
     public ApiResponse<Page<ProductResponse>> getAllApprovedProducts(
