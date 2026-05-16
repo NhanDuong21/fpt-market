@@ -12,7 +12,7 @@ import org.mapstruct.Named;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Mapper(componentModel = "spring", uses = {CategoryMapper.class})
+@Mapper(componentModel = "spring", uses = {CategoryMapper.class}, builder = @org.mapstruct.Builder(disableBuilder = true))
 public interface ProductMapper {
 
     @Mapping(target = "id", ignore = true)

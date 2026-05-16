@@ -9,7 +9,11 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ProductRequest {
     @NotBlank(message = "Product name is required")
     private String name;
