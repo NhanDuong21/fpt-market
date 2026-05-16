@@ -16,10 +16,15 @@ const loginSchema = z.object({
     password: z.string().min(1, 'Mật khẩu là bắt buộc'),
 });
 
+import { useSearchParams } from 'next/navigation';
+
 export default function LoginForm() {
     const { login } = useAuth();
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [showPassword, setShowPassword] = useState(false);
+    
+    const redirectUrl = searchParams.get('redirect') || '/';
 
     const {
         register,
@@ -32,7 +37,7 @@ export default function LoginForm() {
     const onSubmit = async (data) => {
         const success = await login(data.email, data.password);
         if (success) {
-            router.push('/');
+            router.push(redirectUrl);
         }
     };
 

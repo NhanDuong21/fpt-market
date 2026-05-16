@@ -32,8 +32,6 @@ export const AuthProvider = ({ children }) => {
         saveTokens(accessToken, refreshToken);
         saveUser(userData);
         setUser(userData);
-        // set cookie for middleware
-        document.cookie = `accessToken=${accessToken}; path=/; max-age=900; SameSite=Lax`;
         return true;
       }
     } catch (error) {
@@ -66,7 +64,6 @@ export const AuthProvider = ({ children }) => {
     }
     clearTokens();
     setUser(null);
-    document.cookie = 'accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
     router.push('/login');
   };
 
