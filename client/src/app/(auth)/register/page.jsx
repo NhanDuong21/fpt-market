@@ -5,7 +5,7 @@ import RegisterForm from '@/components/auth/RegisterForm';
 
 export default function RegisterPage() {
     return (
-        <AuthLayout title="Đăng ký">
+        <AuthLayout>
             <RegisterForm />
         </AuthLayout>
     );

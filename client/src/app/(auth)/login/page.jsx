@@ -5,7 +5,7 @@ import LoginForm from '@/components/auth/LoginForm';
 
 export default function LoginPage() {
     return (
-        <AuthLayout title="Đăng nhập">
+        <AuthLayout>
             <LoginForm />
         </AuthLayout>
     );
