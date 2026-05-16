@@ -6,6 +6,8 @@ import productService from '@/services/productService';
 import categoryService from '@/services/categoryService';
 import ProductForm from '@/components/product/ProductForm';
 import { toast } from 'react-toastify';
+import PageContainer from '@/components/layout/PageContainer';
+import Button from '@/components/common/Button';
 
 export default function NewProductPage() {
     const router = useRouter();
@@ -29,7 +31,7 @@ export default function NewProductPage() {
         setLoading(true);
         try {
             await productService.createProduct(formData);
-            toast.success('Product submitted successfully! Waiting for admin approval.');
+            toast.success('Đăng sản phẩm thành công! Vui lòng chờ quản trị viên phê duyệt.');
             router.push('/my-products');
         } catch (error) {
             console.error('Failed to create product', error);
@@ -40,19 +42,16 @@ export default function NewProductPage() {
     };
 
     return (
-        <div className="max-w-3xl mx-auto px-4 py-12">
-            <div className="mb-10">
-                <h1 className="text-3xl font-bold text-gray-900">Post New Product</h1>
-                <p className="text-gray-500 mt-1">Fill in the details to list your product for sale</p>
-            </div>
-
-            <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
-                <ProductForm 
-                    categories={categories} 
-                    onSubmit={handleSubmit} 
-                    loading={loading} 
-                />
-            </div>
-        </div>
+        <PageContainer 
+            title="Đăng sản phẩm" 
+            description="Cung cấp đầy đủ thông tin để sản phẩm sớm được phê duyệt"
+            className="max-w-4xl"
+        >
+            <ProductForm 
+                categories={categories} 
+                onSubmit={handleSubmit} 
+                loading={loading} 
+            />
+        </PageContainer>
     );
 }

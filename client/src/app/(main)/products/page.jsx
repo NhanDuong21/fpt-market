@@ -7,6 +7,7 @@ import ProductGrid from '@/components/product/ProductGrid';
 import ProductFilter from '@/components/product/ProductFilter';
 import ProductSort from '@/components/product/ProductSort';
 import Pagination from '@/components/ui/Pagination';
+import PageContainer from '@/components/layout/PageContainer';
 
 export default function ProductsPage() {
     const [products, setProducts] = useState([]);
@@ -65,39 +66,49 @@ export default function ProductsPage() {
 
     const handlePageChange = (page) => {
         setPagination(prev => ({ ...prev, page }));
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div className="flex flex-col md:flex-row gap-8">
-                {/* Sidebar */}
-                <aside className="w-full md:w-64 flex-shrink-0">
-                    <ProductFilter 
-                        categories={categories} 
-                        filters={filters} 
-                        onFilterChange={handleFilterChange} 
-                    />
+        <PageContainer>
+            <div className="flex flex-col lg:flex-row gap-12">
+                {/* Sidebar Filter */}
+                <aside className="w-full lg:w-72 flex-shrink-0">
+                    <div className="sticky top-24">
+                        <ProductFilter 
+                            categories={categories} 
+                            filters={filters} 
+                            onFilterChange={handleFilterChange} 
+                        />
+                    </div>
                 </aside>
 
                 {/* Main Content */}
                 <main className="flex-grow">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
+                    <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
                         <div>
-                            <h1 className="text-3xl font-bold text-gray-900">Explore Products</h1>
-                            <p className="text-gray-500 mt-1">Discover the best deals from FPT students</p>
+                            <h1 className="text-4xl font-black text-gray-900 tracking-tight mb-2">Khám phá sản phẩm</h1>
+                            <p className="text-gray-500 font-medium text-lg">Tìm kiếm những món đồ hời nhất từ sinh viên FPT</p>
                         </div>
-                        <ProductSort sort={sort} onSortChange={setSort} />
+                        <div className="flex items-center gap-4">
+                            <span className="text-sm font-bold text-gray-400 uppercase tracking-widest">Sắp xếp:</span>
+                            <ProductSort sort={sort} onSortChange={setSort} />
+                        </div>
                     </div>
 
                     <ProductGrid products={products} loading={loading} />
                     
-                    <Pagination 
-                        currentPage={pagination.page} 
-                        totalPages={pagination.totalPages} 
-                        onPageChange={handlePageChange} 
-                    />
+                    {!loading && products.length > 0 && (
+                        <div className="mt-16">
+                            <Pagination 
+                                currentPage={pagination.page} 
+                                totalPages={pagination.totalPages} 
+                                onPageChange={handlePageChange} 
+                            />
+                        </div>
+                    )}
                 </main>
             </div>
-        </div>
+        </PageContainer>
     );
 }

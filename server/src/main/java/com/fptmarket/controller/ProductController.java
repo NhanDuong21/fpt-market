@@ -49,6 +49,11 @@ public class ProductController {
         return ApiResponse.success(productService.getProductBySlug(slug), "Product fetched successfully");
     }
 
+    @GetMapping("/id/{id}")
+    public ApiResponse<ProductResponse> getProductById(@PathVariable Long id) {
+        return ApiResponse.success(productService.getProductById(id), "Product fetched successfully");
+    }
+
     @PostMapping(consumes = "multipart/form-data")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ApiResponse<ProductResponse> createProduct(

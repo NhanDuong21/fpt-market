@@ -16,6 +16,8 @@ public interface ProductService {
     
     ProductResponse getProductBySlug(String slug);
     
+    ProductResponse getProductById(Long id);
+    
     ProductResponse createProduct(ProductRequest request, List<MultipartFile> images);
     
     ProductResponse updateProduct(Long id, ProductRequest request, List<MultipartFile> images);

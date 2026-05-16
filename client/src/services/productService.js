@@ -11,6 +11,11 @@ const productService = {
         return response.data;
     },
 
+    getProductById: async (id) => {
+        const response = await api.get(`/api/products/id/${id}`);
+        return response.data;
+    },
+
     createProduct: async (formData) => {
         const response = await api.post('/api/products', formData, {
             headers: {

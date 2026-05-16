@@ -6,6 +6,8 @@ import productService from '@/services/productService';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'react-toastify';
+import Button from '@/components/common/Button';
+import Link from 'next/link';
 
 export default function ProductDetailsPage() {
     const { slug } = useParams();
@@ -31,7 +33,7 @@ export default function ProductDetailsPage() {
             }
         } catch (error) {
             console.error('Failed to fetch product', error);
-            toast.error('Product not found');
+            toast.error('Không tìm thấy sản phẩm');
         } finally {
             setLoading(false);
         }
@@ -39,18 +41,22 @@ export default function ProductDetailsPage() {
 
     const handleAddToCart = async () => {
         if (!user) {
-            toast.info('Please login to continue');
+            toast.error('Vui lòng đăng nhập để thêm vào giỏ hàng');
             router.push('/login');
             return;
         }
 
         if (user.id === product.user?.id) {
-            toast.error('You cannot buy your own product');
+            // This is already handled in UI but safety first
+            toast.error('Bạn không thể mua sản phẩm của chính mình');
             return;
         }
 
         setAdding(true);
         const success = await addToCart(product.id, quantity);
+        if (success) {
+            toast.success('Đã thêm vào giỏ hàng');
+        }
         setAdding(false);
     };
 
@@ -61,11 +67,16 @@ export default function ProductDetailsPage() {
     );
     
     if (!product) return (
-        <div className="max-w-7xl mx-auto px-4 py-20 text-center">
-            <h2 className="text-2xl font-bold text-gray-900">Sản phẩm không tồn tại</h2>
-            <button onClick={() => router.push('/')} className="mt-4 text-red-600 font-semibold hover:underline">
+        <div className="max-w-7xl mx-auto px-4 py-24 text-center">
+            <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg className="w-12 h-12 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.172 9.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <h2 className="text-3xl font-black text-gray-900 mb-4">Sản phẩm không tồn tại</h2>
+            <Button onClick={() => router.push('/')} variant="primary">
                 Quay lại trang chủ
-            </button>
+            </Button>
         </div>
     );
 
@@ -74,23 +85,28 @@ export default function ProductDetailsPage() {
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                {/* Image Gallery */}
-                <div className="space-y-4">
-                    <div className="aspect-square rounded-3xl overflow-hidden bg-white border border-gray-100 shadow-sm">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+                {/* Left: Image Gallery */}
+                <div className="space-y-6">
+                    <div className="aspect-square rounded-[2.5rem] overflow-hidden bg-white border-4 border-white shadow-2xl shadow-gray-200 relative group">
                         <img 
                             src={activeImage || 'https://via.placeholder.com/800x800?text=No+Image'} 
                             alt={product.name}
-                            className="w-full h-full object-contain"
+                            className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500"
                         />
+                        {isOutOfStock && (
+                            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center">
+                                <span className="bg-white text-gray-900 px-8 py-3 rounded-2xl font-black text-2xl uppercase tracking-widest shadow-2xl">Hết hàng</span>
+                            </div>
+                        )}
                     </div>
-                    <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+                    <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
                         {product.images?.map((img, i) => (
                             <button
                                 key={i}
                                 onClick={() => setActiveImage(img)}
-                                className={`flex-shrink-0 w-24 h-24 rounded-xl overflow-hidden border-2 transition-all ${
-                                    activeImage === img ? 'border-red-600 shadow-md' : 'border-transparent opacity-60 hover:opacity-100'
+                                className={`flex-shrink-0 w-28 h-28 rounded-2xl overflow-hidden border-4 transition-all duration-300 ${
+                                    activeImage === img ? 'border-red-600 shadow-xl scale-95' : 'border-white shadow-sm opacity-60 hover:opacity-100 hover:scale-105'
                                 }`}
                             >
                                 <img src={img} className="w-full h-full object-cover" alt="" />
@@ -99,71 +115,96 @@ export default function ProductDetailsPage() {
                     </div>
                 </div>
 
-                {/* Details */}
+                {/* Right: Details */}
                 <div className="flex flex-col">
-                    <div className="mb-6">
-                        <div className="flex items-center gap-3 mb-3">
-                            <span className="px-3 py-1 bg-red-50 text-red-600 text-xs font-bold rounded-full uppercase tracking-wider">
+                    <div className="mb-8">
+                        <div className="flex items-center gap-3 mb-4">
+                            <span className="px-4 py-1.5 bg-red-600 text-white text-xs font-black rounded-xl uppercase tracking-widest shadow-lg shadow-red-100">
                                 {product.category?.name}
                             </span>
-                            <span className={`px-3 py-1 text-xs font-bold rounded-full uppercase tracking-wider ${
-                                product.conditionType === 'NEW' ? 'bg-green-50 text-green-600' : 'bg-orange-50 text-orange-600'
+                            <span className={`px-4 py-1.5 text-xs font-black rounded-xl uppercase tracking-widest border-2 ${
+                                product.conditionType === 'NEW' ? 'bg-green-50 text-green-600 border-green-100' : 'bg-orange-50 text-orange-600 border-orange-100'
                             }`}>
                                 {product.conditionType === 'NEW' ? 'Mới' : 'Đã sử dụng'}
                             </span>
                         </div>
-                        <h1 className="text-4xl font-extrabold text-gray-900 mb-4">{product.name}</h1>
-                        <div className="text-3xl font-black text-red-600">{product.price.toLocaleString()}đ</div>
+                        <h1 className="text-5xl font-black text-gray-900 mb-6 leading-tight tracking-tighter">{product.name}</h1>
+                        <div className="text-4xl font-black text-red-600 tracking-tighter">{product.price.toLocaleString()}đ</div>
                     </div>
 
-                    <div className="bg-white rounded-2xl p-6 mb-8 border border-gray-100 shadow-sm">
-                        <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">Mô tả sản phẩm</h3>
-                        <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">{product.description}</p>
+                    <div className="bg-white rounded-3xl p-8 mb-10 border border-gray-100 shadow-sm relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-red-50 rounded-bl-[5rem] -mr-16 -mt-16 opacity-50"></div>
+                        <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest mb-4 relative z-10">Mô tả sản phẩm</h3>
+                        <p className="text-gray-600 font-medium whitespace-pre-wrap leading-relaxed relative z-10 text-lg">{product.description}</p>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4 mb-8">
-                        <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">
-                            <div className="text-xs text-gray-400 font-bold uppercase mb-1">Người bán</div>
-                            <div className="font-semibold text-gray-900">{product.user?.fullName}</div>
+                    <div className="grid grid-cols-2 gap-6 mb-10">
+                        <div className="bg-gray-50 border border-gray-100 rounded-2xl p-6">
+                            <div className="text-xs text-gray-400 font-black uppercase tracking-widest mb-2">Người bán</div>
+                            <div className="font-black text-gray-900 text-lg">{product.user?.fullName}</div>
                         </div>
-                        <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">
-                            <div className="text-xs text-gray-400 font-bold uppercase mb-1">Kho hàng</div>
-                            <div className="font-semibold text-gray-900">{product.quantity} sản phẩm có sẵn</div>
+                        <div className="bg-gray-50 border border-gray-100 rounded-2xl p-6">
+                            <div className="text-xs text-gray-400 font-black uppercase tracking-widest mb-2">Kho hàng</div>
+                            <div className="font-black text-gray-900 text-lg">{product.quantity} <span className="text-sm text-gray-400 font-bold uppercase ml-1">Sẵn có</span></div>
                         </div>
                     </div>
 
-                    {!isSeller && !isOutOfStock && (
-                        <div className="flex items-center gap-4 mb-8">
-                            <div className="flex items-center border border-gray-200 rounded-xl">
-                                <button 
-                                    onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                                    className="px-4 py-2 hover:bg-gray-50 text-gray-600 font-bold"
-                                >-</button>
-                                <span className="px-4 py-2 font-bold text-gray-900 w-12 text-center">{quantity}</span>
-                                <button 
-                                    onClick={() => setQuantity(q => Math.min(product.quantity, q + 1))}
-                                    className="px-4 py-2 hover:bg-gray-50 text-gray-600 font-bold"
-                                >+</button>
+                    {isSeller ? (
+                        <div className="bg-red-50 border-2 border-red-100 rounded-3xl p-8 mb-8">
+                            <div className="flex items-center gap-4 text-red-600 mb-6">
+                                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <p className="font-black text-lg">Đây là sản phẩm của bạn. Bạn không thể mua sản phẩm do chính mình đăng.</p>
+                            </div>
+                            <div className="flex gap-4">
+                                <Link href="/my-products" className="flex-1">
+                                    <Button variant="secondary" className="w-full py-4 text-lg">Quản lý sản phẩm</Button>
+                                </Link>
+                                <Link href={`/my-products/${product.id}/edit`} className="flex-1">
+                                    <Button variant="primary" className="w-full py-4 text-lg">Chỉnh sửa</Button>
+                                </Link>
                             </div>
                         </div>
-                    )}
+                    ) : (
+                        <>
+                            {!isOutOfStock && (
+                                <div className="flex items-center gap-6 mb-10">
+                                    <span className="text-sm font-black text-gray-400 uppercase tracking-widest">Số lượng</span>
+                                    <div className="flex items-center bg-gray-100 p-1.5 rounded-2xl border border-gray-200">
+                                        <button 
+                                            onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                                            className="w-12 h-12 flex items-center justify-center bg-white rounded-xl shadow-sm text-gray-900 font-black hover:text-red-600 transition-colors"
+                                        >-</button>
+                                        <span className="w-16 text-center font-black text-gray-900 text-xl">{quantity}</span>
+                                        <button 
+                                            onClick={() => setQuantity(q => Math.min(product.quantity, q + 1))}
+                                            className="w-12 h-12 flex items-center justify-center bg-white rounded-xl shadow-sm text-gray-900 font-black hover:text-red-600 transition-colors"
+                                        >+</button>
+                                    </div>
+                                </div>
+                            )}
 
-                    <div className="flex gap-4">
-                        <button 
-                            onClick={handleAddToCart}
-                            disabled={adding || isOutOfStock || isSeller}
-                            className={`flex-1 py-5 font-bold rounded-2xl shadow-xl transition-all flex items-center justify-center gap-2 ${
-                                isOutOfStock || isSeller
-                                ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                                : 'bg-red-600 text-white hover:bg-red-700'
-                            }`}
-                        >
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                            </svg>
-                            {isOutOfStock ? 'Hết hàng' : isSeller ? 'Sản phẩm của bạn' : 'Thêm vào giỏ hàng'}
-                        </button>
-                    </div>
+                            <div className="flex gap-4">
+                                <Button 
+                                    onClick={handleAddToCart}
+                                    variant="primary"
+                                    size="xl"
+                                    disabled={adding || isOutOfStock}
+                                    className="flex-1 group overflow-hidden"
+                                >
+                                    <div className="flex items-center gap-3 group-hover:scale-105 transition-transform">
+                                        <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                        </svg>
+                                        <span className="text-xl uppercase tracking-widest">
+                                            {isOutOfStock ? 'Hết hàng' : 'Thêm vào giỏ hàng'}
+                                        </span>
+                                    </div>
+                                </Button>
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
         </div>

@@ -36,6 +36,12 @@ const adminService = {
     hideProduct: async (id) => {
         const response = await api.put(`/api/admin/products/${id}/hide`);
         return response.data;
+    },
+
+    // Orders
+    getAllOrders: async (params) => {
+        const response = await api.get('/api/admin/orders', { params });
+        return response.data;
     }
 };
 

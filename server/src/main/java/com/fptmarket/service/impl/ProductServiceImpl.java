@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -72,6 +73,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public ProductResponse getProductById(Long id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new AppException("Product not found", ErrorCode.NOT_FOUND.getCode()));
+        return productMapper.toResponse(product);
+    }
+
+    @Override
     @Transactional
     public ProductResponse createProduct(ProductRequest request, List<MultipartFile> images) {
         User currentUser = getCurrentUser();
@@ -87,14 +95,19 @@ public class ProductServiceImpl implements ProductService {
         if (images != null && !images.isEmpty()) {
             for (MultipartFile file : images) {
                 try {
-                    String url = cloudinaryService.uploadFile(file);
+                    Map<String, Object> uploadResult = cloudinaryService.uploadFile(file);
+                    String url = (String) uploadResult.get("secure_url");
+                    String publicId = (String) uploadResult.get("public_id");
+                    
                     ProductImage image = ProductImage.builder()
                             .imageUrl(url)
+                            .publicId(publicId)
                             .product(product)
                             .build();
                     product.addImage(image);
                 } catch (IOException e) {
                     log.error("Failed to upload image during product creation", e);
+                    throw new AppException("Failed to upload image", ErrorCode.INTERNAL_SERVER_ERROR.getCode());
                 }
             }
         }
@@ -122,18 +135,21 @@ public class ProductServiceImpl implements ProductService {
         product.setStatus(ProductStatus.PENDING); // Reset to PENDING after edit
 
         if (images != null && !images.isEmpty()) {
-            // Option: clear old images or just add new ones? 
-            // Requirements say "handle multiple file selections". Usually we add new ones.
             for (MultipartFile file : images) {
                 try {
-                    String url = cloudinaryService.uploadFile(file);
+                    Map<String, Object> uploadResult = cloudinaryService.uploadFile(file);
+                    String url = (String) uploadResult.get("secure_url");
+                    String publicId = (String) uploadResult.get("public_id");
+                    
                     ProductImage image = ProductImage.builder()
                             .imageUrl(url)
+                            .publicId(publicId)
                             .product(product)
                             .build();
                     product.addImage(image);
                 } catch (IOException e) {
                     log.error("Failed to upload image during product update", e);
+                    throw new AppException("Failed to upload image", ErrorCode.INTERNAL_SERVER_ERROR.getCode());
                 }
             }
         }
@@ -150,6 +166,17 @@ public class ProductServiceImpl implements ProductService {
         User currentUser = getCurrentUser();
         if (!product.getUser().getId().equals(currentUser.getId()) && currentUser.getRole() != Role.ADMIN) {
             throw new AppException("You are not allowed to delete this product", ErrorCode.FORBIDDEN.getCode());
+        }
+
+        // Optional: Delete images from Cloudinary when product is deleted
+        for (ProductImage image : product.getImages()) {
+            if (image.getPublicId() != null) {
+                try {
+                    cloudinaryService.deleteFile(image.getPublicId());
+                } catch (IOException e) {
+                    log.warn("Failed to delete image from Cloudinary: {}", image.getPublicId());
+                }
+            }
         }
 
         productRepository.delete(product);

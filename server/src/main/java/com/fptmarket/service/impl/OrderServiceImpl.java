@@ -165,6 +165,11 @@ public class OrderServiceImpl implements OrderService {
         return orderMapper.toResponse(savedOrder);
     }
 
+    @Override
+    public Page<OrderResponse> getAllOrders(Pageable pageable) {
+        return orderRepository.findAll(pageable).map(orderMapper::toResponse);
+    }
+
     private User getCurrentUser() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByEmail(email)
