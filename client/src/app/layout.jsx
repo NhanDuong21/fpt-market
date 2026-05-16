@@ -1,5 +1,6 @@
 import './globals.css';
 import { AuthProvider } from '../context/AuthContext';
+import { CartProvider } from '../context/CartContext';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -13,8 +14,10 @@ export default function RootLayout({ children }) {
     <html lang="vi">
       <body className="bg-gray-50 flex flex-col min-h-screen">
         <AuthProvider>
-          {children}
-          <ToastContainer position="top-right" autoClose={3000} />
+          <CartProvider>
+            {children}
+            <ToastContainer position="top-right" autoClose={3000} />
+          </CartProvider>
         </AuthProvider>
       </body>
     </html>

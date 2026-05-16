@@ -8,7 +8,7 @@ The development of FPT-Market is divided into strategic phases to ensure a stabl
 - [x] Monorepo setup (`/client`, `/server`, `/docs`).
 - [x] Implement robust Authentication & JWT lifecycle.
 - [x] Build Product Catalog and Category navigation.
-- [ ] Implement Cart and Order Processing (with Snapshot pattern).
+- [x] Implement Cart and Order Processing (with Snapshot pattern).
 - [ ] Integrate VNPay Sandbox for checkout.
 - [ ] Deploy MVP to Vercel (Frontend) and Render/Railway (Backend).
 

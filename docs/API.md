@@ -98,3 +98,38 @@ Every HTTP response (both success and error) MUST adhere to the following JSON s
 
 **PUT** `/api/admin/products/{id}/hide`
 - Hides an APPROVED product from public view.
+
+### 6. Cart Management (User)
+
+**GET** `/api/v1/cart`
+- Fetches current user's cart (creates one if it doesn't exist).
+
+**POST** `/api/v1/cart/items`
+- **Body**: `{ "productId": Long, "quantity": Integer }`
+- Adds item to cart. Validates stock and ownership.
+
+**PUT** `/api/v1/cart/items/{id}`
+- **Params**: `quantity`
+- Updates quantity of a cart item.
+
+**DELETE** `/api/v1/cart/items/{id}`
+- Removes an item from cart.
+
+**DELETE** `/api/v1/cart/clear`
+- Clears all items from current user's cart.
+
+### 7. Order Management (User)
+
+**POST** `/api/v1/orders`
+- **Body**: `{ "fullName": "String", "phone": "String", "shippingAddress": "String" }`
+- Creates a new order (COD only). Deducts stock and snapshots product info.
+
+**GET** `/api/v1/orders/my`
+- **Params**: `page`, `size`
+- Lists current user's orders (descending by date).
+
+**GET** `/api/v1/orders/{id}`
+- Fetches detailed info of a specific order.
+
+**PUT** `/api/v1/orders/{id}/cancel`
+- Cancels a PENDING or CONFIRMED order and restores stock.
