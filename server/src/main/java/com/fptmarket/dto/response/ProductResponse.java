@@ -2,7 +2,11 @@ package com.fptmarket.dto.response;
 
 import com.fptmarket.entity.ConditionType;
 import com.fptmarket.entity.ProductStatus;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

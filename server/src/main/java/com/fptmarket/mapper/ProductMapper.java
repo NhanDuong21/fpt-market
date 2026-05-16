@@ -7,12 +7,12 @@ import com.fptmarket.entity.ProductImage;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.Named;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
 
-@Mapper(componentModel = "spring", uses = {CategoryMapper.class}, builder = @org.mapstruct.Builder(disableBuilder = true))
+@Mapper(componentModel = "spring", builder = @org.mapstruct.Builder(disableBuilder = true), uses = {CategoryMapper.class})
 public interface ProductMapper {
 
     @Mapping(target = "id", ignore = true)
@@ -26,10 +26,10 @@ public interface ProductMapper {
     @Mapping(target = "updatedAt", ignore = true)
     Product toEntity(ProductRequest request);
 
-    @Mapping(target = "images", source = "images", qualifiedByName = "mapImages")
     @Mapping(target = "user.id", source = "user.id")
     @Mapping(target = "user.fullName", source = "user.fullName")
     @Mapping(target = "user.email", source = "user.email")
+    @Mapping(target = "images", expression = "java(mapProductImages(product.getImages()))")
     ProductResponse toResponse(Product product);
 
     @Mapping(target = "id", ignore = true)
@@ -43,11 +43,12 @@ public interface ProductMapper {
     @Mapping(target = "updatedAt", ignore = true)
     void updateEntity(ProductRequest request, @MappingTarget Product product);
 
-    @Named("mapImages")
-    default List<String> mapImages(List<ProductImage> images) {
-        if (images == null) return null;
+    default List<String> mapProductImages(List<ProductImage> images) {
+        if (images == null) {
+            return new ArrayList<>();
+        }
         return images.stream()
-                .map(ProductImage::getImageUrl)
-                .collect(Collectors.toList());
+                     .map(ProductImage::getImageUrl)
+                     .collect(Collectors.toList());
     }
 }
