@@ -61,7 +61,9 @@ export default function ProductForm({ categories, initialData, onSubmit, loading
         }
 
         const formData = new FormData();
-        formData.append('product', new Blob([JSON.stringify(data)], { type: 'application/json' }));
+        // The backend expects @RequestPart("request") as application/json
+        const requestBlob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+        formData.append('request', requestBlob);
         
         selectedFiles.forEach((file) => {
             formData.append('images', file);

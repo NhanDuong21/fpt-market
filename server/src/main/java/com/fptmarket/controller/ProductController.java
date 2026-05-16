@@ -57,7 +57,7 @@ public class ProductController {
     @PostMapping(consumes = "multipart/form-data")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ApiResponse<ProductResponse> createProduct(
-            @RequestPart("product") @Valid ProductRequest request,
+            @RequestPart("request") @Valid ProductRequest request,
             @RequestPart(value = "images", required = false) List<MultipartFile> images) {
         return ApiResponse.success(productService.createProduct(request, images), "Product created successfully. Waiting for admin approval.");
     }
@@ -66,7 +66,7 @@ public class ProductController {
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ApiResponse<ProductResponse> updateProduct(
             @PathVariable Long id,
-            @RequestPart("product") @Valid ProductRequest request,
+            @RequestPart("request") @Valid ProductRequest request,
             @RequestPart(value = "images", required = false) List<MultipartFile> images) {
         return ApiResponse.success(productService.updateProduct(id, request, images), "Product updated successfully. Waiting for admin approval.");
     }
