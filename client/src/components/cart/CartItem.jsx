@@ -4,15 +4,17 @@ import React from 'react';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
 
+import SafeImage from '@/components/common/SafeImage';
+
 const CartItem = ({ item }) => {
   const { updateQuantity, removeItem } = useCart();
 
   return (
     <div className="flex flex-col sm:flex-row items-center gap-6 p-6 bg-white rounded-3xl border border-gray-100 shadow-sm mb-4 transition-all hover:shadow-md">
       {/* Product Image */}
-      <div className="w-24 h-24 flex-shrink-0 rounded-2xl overflow-hidden bg-gray-50 border border-gray-100">
-        <img 
-          src={item.productImageUrl || 'https://via.placeholder.com/150?text=No+Image'} 
+      <div className="w-24 h-24 flex-shrink-0 rounded-2xl overflow-hidden bg-gray-50 border border-gray-100 flex items-center justify-center">
+        <SafeImage 
+          src={item.productImageUrl} 
           alt={item.productName}
           className="w-full h-full object-contain"
         />

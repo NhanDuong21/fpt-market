@@ -6,6 +6,7 @@ import sellerOrderService from '@/services/sellerOrderService';
 import OrderStatusBadge from '@/components/order/OrderStatusBadge';
 import SellerOrderActionButtons from '@/components/seller/SellerOrderActionButtons';
 import Link from 'next/link';
+import SafeImage from '@/components/common/SafeImage';
 
 export default function SellerOrderDetailPage() {
   const { id } = useParams();
@@ -74,8 +75,8 @@ export default function SellerOrderDetailPage() {
               <div className="divide-y divide-gray-50">
                 {order.items?.map(item => (
                   <div key={item.id} className="py-4 flex gap-6 items-center">
-                    <div className="w-20 h-20 bg-gray-50 rounded-2xl border border-gray-100 overflow-hidden flex-shrink-0">
-                      <img src={item.imageUrl} alt="" className="w-full h-full object-contain" />
+                    <div className="w-20 h-20 bg-gray-50 rounded-2xl border border-gray-100 overflow-hidden flex-shrink-0 flex items-center justify-center">
+                      <SafeImage src={item.imageUrl} alt="" className="w-full h-full object-contain" />
                     </div>
                     <div className="flex-1">
                       <div className="font-bold text-gray-900 line-clamp-1">{item.productName}</div>

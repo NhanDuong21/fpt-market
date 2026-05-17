@@ -1,19 +1,16 @@
 import Link from 'next/link';
+import SafeImage from '@/components/common/SafeImage';
 
 export default function ProductCard({ product }) {
     const { name, slug, price, conditionType, images, category } = product;
-    const mainImage = images && images.length > 0 ? images[0] : 'https://via.placeholder.com/400x300?text=No+Image';
+    const mainImage = images && images.length > 0 ? images[0] : null;
 
     return (
         <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden border border-gray-100 flex flex-col h-full group">
-            <Link href={`/products/${slug}`} className="relative aspect-[4/3] overflow-hidden">
-                <img 
+            <Link href={`/products/${slug}`} className="relative aspect-[4/3] overflow-hidden flex items-center justify-center bg-gray-50">
+                <SafeImage 
                     src={mainImage} 
                     alt={name} 
-                    onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = 'https://via.placeholder.com/400x300?text=Image+Not+Found';
-                    }}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
                 <div className="absolute top-2 left-2">
@@ -33,7 +30,7 @@ export default function ProductCard({ product }) {
                 </Link>
                 <div className="mt-auto flex items-center justify-between">
                     <span className="text-xl font-black text-red-600">
-                        ${price.toLocaleString()}
+                        {price.toLocaleString()}đ
                     </span>
                     <Link 
                         href={`/products/${slug}`}

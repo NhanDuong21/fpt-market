@@ -8,6 +8,9 @@ import { toast } from 'react-toastify';
 import PageContainer from '@/components/layout/PageContainer';
 import Button from '@/components/common/Button';
 
+import EmptyState from '@/components/common/EmptyState';
+import SafeImage from '@/components/common/SafeImage';
+
 export default function MyProductsPage() {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -60,18 +63,12 @@ export default function MyProductsPage() {
                     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-600"></div>
                 </div>
             ) : products.length === 0 ? (
-                <div className="text-center py-24 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm">
-                    <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <svg className="w-12 h-12 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                        </svg>
-                    </div>
-                    <h2 className="text-2xl font-black text-gray-900 mb-2">Bạn chưa đăng sản phẩm nào</h2>
-                    <p className="text-gray-500 font-medium mb-8">Hãy bắt đầu kinh doanh trên FPT-Market ngay hôm nay!</p>
-                    <Link href="/my-products/new">
-                        <Button variant="primary" size="lg">Đăng sản phẩm đầu tiên</Button>
-                    </Link>
-                </div>
+                <EmptyState
+                    title="Bạn chưa đăng sản phẩm nào"
+                    description="Hãy bắt đầu kinh doanh các sản phẩm chất lượng trên FPT-Market ngay hôm nay!"
+                    buttonText="Đăng sản phẩm đầu tiên"
+                    buttonLink="/my-products/new"
+                />
             ) : (
                 <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
                     <div className="overflow-x-auto">
@@ -90,9 +87,9 @@ export default function MyProductsPage() {
                                     <tr key={product.id} className="hover:bg-red-50/30 transition-colors group">
                                         <td className="px-8 py-5">
                                             <div className="flex items-center gap-5">
-                                                <div className="w-16 h-16 rounded-2xl bg-gray-100 border border-gray-100 overflow-hidden flex-shrink-0 shadow-sm">
-                                                    <img 
-                                                        src={product.images?.[0] || 'https://via.placeholder.com/200?text=No+Image'} 
+                                                <div className="w-16 h-16 rounded-2xl bg-gray-100 border border-gray-100 overflow-hidden flex-shrink-0 shadow-sm flex items-center justify-center">
+                                                    <SafeImage 
+                                                        src={product.images?.[0]} 
                                                         alt="" 
                                                         className="w-full h-full object-cover"
                                                     />

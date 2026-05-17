@@ -29,6 +29,7 @@ The development of FPT-Market is divided into strategic phases to ensure a stabl
 - [ ] Implement Redis caching for high-traffic endpoints.
 - [ ] Automated inventory alerts and reporting.
 - [x] Mobile-responsive layout refinement (Red/White theme redesign).
+- [x] Phase 4.6 UI/UX Polish: Reusable EmptyState, SafeImage fallback wrappers, real-time Header cart counts, full Vietnamese order status translations, and Next.js Suspense pre-render fix.
 
 ## Phase 4: Microservices Transition (Future Consideration)
 *Focus: Breaking down the monolith if scale demands.*

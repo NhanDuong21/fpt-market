@@ -1,37 +1,49 @@
 export const getOrderStatusLabel = (status) => {
-  const statusMap = {
-    PENDING: 'Chờ xác nhận',
-    CONFIRMED: 'Đã xác nhận',
-    SHIPPING: 'Đang giao',
-    COMPLETED: 'Hoàn thành',
-    CANCELLED: 'Đã hủy',
-  };
-  return statusMap[status] || status;
+    switch (status) {
+        case 'PENDING':
+            return 'Chờ xác nhận';
+        case 'CONFIRMED':
+            return 'Đã xác nhận';
+        case 'SHIPPING':
+            return 'Đang giao';
+        case 'COMPLETED':
+            return 'Hoàn thành';
+        case 'CANCELLED':
+            return 'Đã hủy';
+        default:
+            return status;
+    }
 };
 
 export const getOrderStatusBadgeClass = (status) => {
-  const badgeMap = {
-    PENDING: 'bg-orange-100 text-orange-600 border-orange-200',
-    CONFIRMED: 'bg-blue-100 text-blue-600 border-blue-200',
-    SHIPPING: 'bg-purple-100 text-purple-600 border-purple-200',
-    COMPLETED: 'bg-green-100 text-green-600 border-green-200',
-    CANCELLED: 'bg-gray-100 text-gray-400 border-gray-200',
-  };
-  return badgeMap[status] || 'bg-gray-100 text-gray-600 border-gray-200';
+    switch (status) {
+        case 'PENDING':
+            return 'bg-amber-50 text-amber-600 border-amber-100';
+        case 'CONFIRMED':
+            return 'bg-blue-50 text-blue-600 border-blue-100';
+        case 'SHIPPING':
+            return 'bg-indigo-50 text-indigo-600 border-indigo-100';
+        case 'COMPLETED':
+            return 'bg-emerald-50 text-emerald-600 border-emerald-100';
+        case 'CANCELLED':
+            return 'bg-gray-50 text-gray-500 border-gray-100';
+        default:
+            return 'bg-gray-50 text-gray-900 border-gray-100';
+    }
 };
 
 export const canBuyerCancelOrder = (status) => {
-  return status === 'PENDING' || status === 'CONFIRMED';
+    return status === 'PENDING';
 };
 
 export const canSellerConfirmOrder = (status) => {
-  return status === 'PENDING';
+    return status === 'PENDING';
 };
 
 export const canSellerShipOrder = (status) => {
-  return status === 'CONFIRMED';
+    return status === 'CONFIRMED';
 };
 
 export const canSellerCompleteOrder = (status) => {
-  return status === 'SHIPPING';
+    return status === 'SHIPPING';
 };

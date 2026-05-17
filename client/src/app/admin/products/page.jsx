@@ -8,6 +8,8 @@ import RejectProductModal from '@/components/admin/RejectProductModal';
 import PageContainer from '@/components/layout/PageContainer';
 import Button from '@/components/common/Button';
 
+import SafeImage from '@/components/common/SafeImage';
+
 export default function AdminProductsPage() {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -113,9 +115,9 @@ export default function AdminProductsPage() {
                                         <tr key={product.id} className="hover:bg-red-50/30 transition-colors group">
                                             <td className="px-8 py-5">
                                                 <div className="flex items-center gap-5">
-                                                    <div className="w-16 h-16 rounded-2xl bg-gray-100 border border-gray-100 overflow-hidden flex-shrink-0 shadow-sm">
-                                                        <img 
-                                                            src={product.images?.[0] || 'https://via.placeholder.com/200?text=No+Image'} 
+                                                    <div className="w-16 h-16 rounded-2xl bg-gray-100 border border-gray-100 overflow-hidden flex-shrink-0 shadow-sm flex items-center justify-center">
+                                                        <SafeImage 
+                                                            src={product.images?.[0]} 
                                                             alt="" 
                                                             className="w-full h-full object-cover"
                                                         />

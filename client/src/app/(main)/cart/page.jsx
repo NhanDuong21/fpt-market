@@ -6,6 +6,8 @@ import { useCart } from '@/context/CartContext';
 import CartItem from '@/components/cart/CartItem';
 import CartSummary from '@/components/cart/CartSummary';
 
+import EmptyState from '@/components/common/EmptyState';
+
 export default function CartPage() {
   const { cart, loading, cartCount } = useCart();
 
@@ -19,22 +21,13 @@ export default function CartPage() {
 
   if (!cart || cart.items.length === 0) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-24 text-center">
-        <div className="w-48 h-48 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-8">
-          <svg className="w-24 h-24 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-          </svg>
-        </div>
-        <h1 className="text-3xl font-black text-gray-900 mb-4">Giỏ hàng đang trống</h1>
-        <p className="text-gray-500 mb-8 max-w-md mx-auto">
-          Có vẻ như bạn chưa thêm sản phẩm nào vào giỏ hàng. Hãy khám phá các sản phẩm tuyệt vời của chúng tôi nhé!
-        </p>
-        <Link 
-          href="/"
-          className="inline-block px-12 py-4 bg-red-600 text-white font-bold rounded-2xl shadow-xl shadow-red-100 hover:bg-red-700 transition-all"
-        >
-          Khám phá ngay
-        </Link>
+      <div className="max-w-7xl mx-auto px-4 py-16">
+        <EmptyState
+          title="Giỏ hàng của bạn đang trống"
+          description="Có vẻ như bạn chưa thêm sản phẩm nào vào giỏ hàng. Hãy khám phá các sản phẩm tuyệt vời của chúng tôi nhé!"
+          buttonText="Khám phá sản phẩm"
+          buttonLink="/"
+        />
       </div>
     );
   }

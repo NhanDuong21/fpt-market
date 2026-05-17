@@ -9,7 +9,7 @@ import { useState } from 'react';
 
 export default function Header() {
     const { user, logout } = useAuth();
-    const { cartCount } = useCart();
+    const { totalItems } = useCart();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     return (
@@ -31,7 +31,9 @@ export default function Header() {
                         {/* Cart */}
                         <Link href="/cart" className="p-2 text-white hover:bg-red-700 rounded-full transition-all relative">
                             <ShoppingCart className="w-6 h-6" />
-                            <span className="absolute top-1 right-1 w-4 h-4 bg-white text-red-600 text-[10px] font-bold rounded-full flex items-center justify-center">{cartCount}</span>
+                            {totalItems > 0 && (
+                                <span className="absolute -top-1 -right-1 min-w-[1.25rem] h-5 px-1 bg-white text-red-600 text-[10px] font-black rounded-full flex items-center justify-center border border-red-600 shadow-md">{totalItems}</span>
+                            )}
                         </Link>
 
                         {/* Sell Button */}
@@ -64,37 +66,43 @@ export default function Header() {
                                         </div>
                                         {user.role === 'ADMIN' ? (
                                             <>
-                                                <Link href="/admin" className="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 transition-all">
+                                                <Link href="/admin" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 transition-all">
                                                     <LayoutDashboard className="w-4 h-4" /> Dashboard
                                                 </Link>
-                                                <Link href="/admin/categories" className="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 transition-all">
+                                                <Link href="/admin/categories" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 transition-all">
                                                     <Settings className="w-4 h-4" /> Quản lý danh mục
                                                 </Link>
-                                                <Link href="/admin/products" className="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 transition-all">
+                                                <Link href="/admin/products" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 transition-all">
                                                     <PlusCircle className="w-4 h-4" /> Quản lý sản phẩm
+                                                </Link>
+                                                <Link href="/admin/orders" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 transition-all">
+                                                    <ShoppingCart className="w-4 h-4" /> Quản lý đơn hàng
                                                 </Link>
                                             </>
                                         ) : (
                                             <>
-                                                <Link href="/profile" className="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 transition-all">
+                                                <Link href="/profile" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 transition-all">
                                                     <User className="w-4 h-4" /> Hồ sơ
                                                 </Link>
-                                                <Link href="/my-products/new" className="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 transition-all">
+                                                <Link href="/my-products/new" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 transition-all">
                                                     <PlusCircle className="w-4 h-4" /> Đăng bán
                                                 </Link>
-                                                <Link href="/my-products" className="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 transition-all">
+                                                <Link href="/my-products" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 transition-all">
                                                     <LayoutDashboard className="w-4 h-4" /> Sản phẩm của tôi
                                                 </Link>
-                                                <Link href="/my-orders" className="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 transition-all">
+                                                <Link href="/my-orders" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 transition-all">
                                                     <ShoppingCart className="w-4 h-4" /> Đơn mua
                                                 </Link>
-                                                <Link href="/seller/orders" className="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 transition-all">
+                                                <Link href="/seller/orders" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 transition-all">
                                                     <Settings className="w-4 h-4" /> Đơn bán
                                                 </Link>
                                             </>
                                         )}
                                         <button 
-                                            onClick={logout}
+                                            onClick={() => {
+                                                setIsMenuOpen(false);
+                                                logout();
+                                            }}
                                             className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-red-50 hover:text-red-600 transition-all border-t border-gray-50 mt-1"
                                         >
                                             <LogOut className="w-4 h-4" /> Đăng xuất

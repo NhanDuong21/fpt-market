@@ -17,7 +17,7 @@ const schema = z.object({
 
 const CheckoutForm = () => {
   const router = useRouter();
-  const { cart, refreshCart } = useCart();
+  const { cart, refreshCart, setCart } = useCart();
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
     resolver: zodResolver(schema)
   });
@@ -26,7 +26,8 @@ const CheckoutForm = () => {
     try {
       const response = await orderService.createOrder(data);
       toast.success('Đặt hàng thành công!');
-      await refreshCart(); // Should clear the cart on backend and here
+      setCart(null); // Instant local cart zeroing
+      await refreshCart();
       router.push(`/my-orders/${response.data.id}`);
     } catch (error) {
       const message = error.response?.data?.message || 'Đã xảy ra lỗi khi đặt hàng';

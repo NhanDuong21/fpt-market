@@ -5,6 +5,8 @@ import { useCart } from '@/context/CartContext';
 import { useRouter } from 'next/navigation';
 import CheckoutForm from '@/components/checkout/CheckoutForm';
 import Link from 'next/link';
+import EmptyState from '@/components/common/EmptyState';
+import SafeImage from '@/components/common/SafeImage';
 
 export default function CheckoutPage() {
   const { cart, loading } = useCart();
@@ -20,15 +22,13 @@ export default function CheckoutPage() {
 
   if (!cart || cart.items.length === 0) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-24 text-center">
-        <h1 className="text-3xl font-black text-gray-900 mb-4">Giỏ hàng trống</h1>
-        <p className="text-gray-500 mb-8">Bạn không thể thanh toán khi giỏ hàng đang trống.</p>
-        <button 
-          onClick={() => router.push('/')}
-          className="inline-block px-12 py-4 bg-red-600 text-white font-bold rounded-2xl shadow-xl hover:bg-red-700 transition-all"
-        >
-          Tiếp tục mua sắm
-        </button>
+      <div className="max-w-7xl mx-auto px-4 py-16">
+        <EmptyState
+          title="Giỏ hàng đang trống"
+          description="Bạn không thể tiến hành thanh toán khi không có sản phẩm nào trong giỏ hàng."
+          buttonText="Tiếp tục mua sắm"
+          buttonLink="/"
+        />
       </div>
     );
   }
@@ -58,8 +58,8 @@ export default function CheckoutPage() {
             <div className="space-y-4 mb-6 max-h-[400px] overflow-y-auto pr-2 scrollbar-hide">
               {cart.items.map(item => (
                 <div key={item.id} className="flex gap-4">
-                  <div className="w-16 h-16 bg-gray-50 rounded-xl border border-gray-100 overflow-hidden flex-shrink-0">
-                    <img src={item.productImageUrl} alt={item.productName} className="w-full h-full object-contain" />
+                  <div className="w-16 h-16 bg-gray-50 rounded-xl border border-gray-100 overflow-hidden flex-shrink-0 flex items-center justify-center">
+                    <SafeImage src={item.productImageUrl} alt={item.productName} className="w-full h-full object-contain" />
                   </div>
                   <div className="flex-1">
                     <div className="font-bold text-gray-900 text-sm line-clamp-1">{item.productName}</div>

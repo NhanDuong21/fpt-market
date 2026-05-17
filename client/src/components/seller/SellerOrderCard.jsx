@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import SafeImage from '@/components/common/SafeImage';
 import OrderStatusBadge from '@/components/order/OrderStatusBadge';
 
 const SellerOrderCard = ({ order }) => {
@@ -19,8 +20,8 @@ const SellerOrderCard = ({ order }) => {
 
       <div className="flex gap-4 mb-6">
         {firstItem && (
-          <div className="w-20 h-20 bg-gray-50 rounded-2xl border border-gray-100 overflow-hidden flex-shrink-0">
-            <img src={firstItem.imageUrl} alt="" className="w-full h-full object-contain" />
+          <div className="w-20 h-20 bg-gray-50 rounded-2xl border border-gray-100 overflow-hidden flex-shrink-0 flex items-center justify-center">
+            <SafeImage src={firstItem.imageUrl} alt="" className="w-full h-full object-contain" />
           </div>
         )}
         <div className="flex-1">
