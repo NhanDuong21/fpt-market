@@ -19,6 +19,10 @@ target/
 *.class
 .mvn/
 
+# Spring Boot config chứa secret
+server/src/main/resources/application.properties
+server/src/main/resources/application-dev.properties
+
 # IDEs
 .idea/
 .vscode/
