@@ -10,12 +10,14 @@ import java.util.Collections;
 
 public class CustomUserDetails implements UserDetails {
 
+    private final User user;
     private final Long id;
     private final String email;
     private final String password;
     private final Collection<? extends GrantedAuthority> authorities;
 
     public CustomUserDetails(User user) {
+        this.user = user;
         this.id = user.getId();
         this.email = user.getEmail();
         this.password = user.getPassword();
@@ -26,9 +28,15 @@ public class CustomUserDetails implements UserDetails {
         return id;
     }
 
+    public User getUser() {
+        return user;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
+        return java.util.Collections.singletonList(
+            new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_" + user.getRole().name())
+        );
     }
 
     @Override

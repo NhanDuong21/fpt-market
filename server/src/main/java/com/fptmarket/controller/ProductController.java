@@ -13,6 +13,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import com.fptmarket.security.CustomUserDetails;
+
 import java.util.List;
 
 @RestController
@@ -54,11 +57,12 @@ public class ProductController {
         return ApiResponse.success(productService.getProductById(id), "Product fetched successfully");
     }
 
-    @PostMapping(consumes = "multipart/form-data")
+    @PostMapping(consumes = org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ApiResponse<ProductResponse> createProduct(
             @RequestPart("request") @Valid ProductRequest request,
-            @RequestPart(value = "images", required = false) List<MultipartFile> images) {
+            @RequestPart(value = "images", required = false) List<MultipartFile> images,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
         return ApiResponse.success(productService.createProduct(request, images), "Product created successfully. Waiting for admin approval.");
     }
 
