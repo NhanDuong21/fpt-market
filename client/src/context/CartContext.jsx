@@ -10,17 +10,26 @@ const CartContext = createContext();
 export const CartProvider = ({ children }) => {
   const { user } = useAuth();
   const [cart, setCart] = useState(null);
+  const [cartItems, setCartItems] = useState([]);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalAmount, setTotalAmount] = useState(0);
   const [loading, setLoading] = useState(false);
 
   const fetchCart = useCallback(async () => {
     if (!user) {
       setCart(null);
+      setCartItems([]);
+      setTotalItems(0);
+      setTotalAmount(0);
       return;
     }
     try {
       setLoading(true);
-      const res = await cartService.getCart();
-      setCart(res.data);
+      const cartData = await cartService.getCart();
+      setCart(cartData);
+      setCartItems(cartData?.items || []);
+      setTotalItems(cartData?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0);
+      setTotalAmount(cartData?.totalAmount || 0);
     } catch (error) {
       console.error('Failed to fetch cart:', error);
     } finally {
@@ -38,8 +47,11 @@ export const CartProvider = ({ children }) => {
       return false;
     }
     try {
-      const res = await cartService.addItem(productId, quantity);
-      setCart(res.data);
+      const cartData = await cartService.addItem(productId, quantity);
+      setCart(cartData);
+      setCartItems(cartData?.items || []);
+      setTotalItems(cartData?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0);
+      setTotalAmount(cartData?.totalAmount || 0);
       toast.success('Đã thêm vào giỏ hàng');
       return true;
     } catch (error) {
@@ -51,8 +63,11 @@ export const CartProvider = ({ children }) => {
 
   const updateQuantity = async (itemId, quantity) => {
     try {
-      const res = await cartService.updateItem(itemId, quantity);
-      setCart(res.data);
+      const cartData = await cartService.updateItem(itemId, quantity);
+      setCart(cartData);
+      setCartItems(cartData?.items || []);
+      setTotalItems(cartData?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0);
+      setTotalAmount(cartData?.totalAmount || 0);
     } catch (error) {
       const message = error.response?.data?.message || 'Failed to update quantity';
       toast.error(message);
@@ -61,8 +76,11 @@ export const CartProvider = ({ children }) => {
 
   const removeItem = async (itemId) => {
     try {
-      const res = await cartService.removeItem(itemId);
-      setCart(res.data);
+      const cartData = await cartService.removeItem(itemId);
+      setCart(cartData);
+      setCartItems(cartData?.items || []);
+      setTotalItems(cartData?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0);
+      setTotalAmount(cartData?.totalAmount || 0);
       toast.success('Đã xóa khỏi giỏ hàng');
     } catch (error) {
       toast.error('Failed to remove item');
@@ -73,23 +91,25 @@ export const CartProvider = ({ children }) => {
     try {
       await cartService.clearCart();
       setCart(null);
+      setCartItems([]);
+      setTotalItems(0);
+      setTotalAmount(0);
     } catch (error) {
       toast.error('Failed to clear cart');
     }
   };
 
-  const cartCount = cart?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
-  const totalItems = cartCount;
-
   return (
     <CartContext.Provider value={{ 
       cart, 
+      cartItems,
+      totalAmount,
       loading, 
       addToCart, 
       updateQuantity, 
       removeItem, 
       clearCart,
-      cartCount,
+      cartCount: totalItems,
       totalItems,
       setCart,
       fetchCart,

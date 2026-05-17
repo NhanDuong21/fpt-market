@@ -140,7 +140,7 @@ const PaymentResultContent = () => {
           </div>
 
           <h1 className="text-3xl font-black text-gray-900 mb-2 tracking-tight">Thanh toán chưa hoàn tất</h1>
-          <p className="text-gray-500 font-medium mb-8">Giao dịch của bạn đã bị hủy hoặc không thể hoàn thành</p>
+          <p className="text-gray-500 font-medium mb-8">Sản phẩm vẫn được giữ trong giỏ hàng của bạn.</p>
 
           <div className="bg-red-50/50 rounded-3xl p-6 mb-8 border border-red-100 text-center">
             <p className="text-red-700 font-bold text-base leading-relaxed">
@@ -156,10 +156,10 @@ const PaymentResultContent = () => {
               Quay lại giỏ hàng
             </Link>
             <Link 
-              href="/"
+              href="/checkout"
               className="flex-1 py-5 bg-gray-50 hover:bg-gray-100 text-gray-700 font-extrabold text-lg rounded-2xl border border-gray-200 transition-all text-center"
             >
-              Về trang chủ
+              Thử thanh toán lại
             </Link>
           </div>
         </div>

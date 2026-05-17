@@ -1,15 +1,18 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
 import CartItem from '@/components/cart/CartItem';
 import CartSummary from '@/components/cart/CartSummary';
-
 import EmptyState from '@/components/common/EmptyState';
 
 export default function CartPage() {
-  const { cart, loading, cartCount } = useCart();
+  const { cart, loading, cartCount, fetchCart } = useCart();
+
+  useEffect(() => {
+    fetchCart();
+  }, [fetchCart]);
 
   if (loading) {
     return (
