@@ -159,6 +159,12 @@ public class PaymentServiceImpl implements PaymentService {
         Payment payment = paymentRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new AppException("Payment not found", ErrorCode.NOT_FOUND.getCode()));
 
+        // Idempotency Check: If payment is already PAID, return immediately to prevent double processing
+        if (payment.getPaymentStatus() == PaymentStatus.PAID) {
+            log.info("Payment already PAID for Order ID: {}. Returning early without modifications.", orderId);
+            return mapToResponse(payment);
+        }
+
         String responseCode = queryParams.get("vnp_ResponseCode");
         
         // In mock mode, if it is a bypass, or if the developer redirected without standard vnpay sandbox parameters, 

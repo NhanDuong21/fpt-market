@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useEffect, useState, Suspense } from 'react';
+import React, { useEffect, useState, useRef, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import paymentService from '@/services/paymentService';
 import Link from 'next/link';
 import PaymentStatusBadge from '@/components/order/PaymentStatusBadge';
-import { getPaymentMethodLabel } from '@/utils/paymentStatus';
+import { getPaymentMethodLabel, getPaymentStatusLabel } from '@/utils/paymentStatus';
+import { CheckCircle, XCircle } from 'lucide-react';
 
 const PaymentResultContent = () => {
   const searchParams = useSearchParams();
@@ -14,9 +15,13 @@ const PaymentResultContent = () => {
   const [success, setSuccess] = useState(false);
   const [paymentDetails, setPaymentDetails] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
+  const calledRef = useRef(false);
 
   useEffect(() => {
     const verifyTransaction = async () => {
+      if (calledRef.current) return;
+      calledRef.current = true;
+
       try {
         const queryString = searchParams.toString();
         if (!queryString) {
@@ -38,7 +43,7 @@ const PaymentResultContent = () => {
           } else {
             setSuccess(false);
             setPaymentDetails(res.data);
-            setErrorMessage('Giao dịch thanh toán không thành công hoặc thất bại.');
+            setErrorMessage('Thanh toán thất bại hoặc đã bị hủy.');
           }
         } else {
           setSuccess(false);
@@ -58,8 +63,8 @@ const PaymentResultContent = () => {
 
   if (loading) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center px-4">
-        <div className="w-16 h-16 border-t-4 border-b-4 border-red-600 border-solid rounded-full animate-spin mb-6"></div>
+      <div className="min-h-[60vh] flex flex-col items-center justify-center px-4 bg-gray-50/50">
+        <div className="w-16 h-16 border-4 border-red-600 border-t-transparent border-solid rounded-full animate-spin mb-6"></div>
         <h2 className="text-2xl font-black text-gray-900 tracking-tight mb-2">Đang xác thực thanh toán</h2>
         <p className="text-gray-500 font-medium">Vui lòng không đóng trình duyệt hoặc tải lại trang...</p>
       </div>
@@ -67,20 +72,18 @@ const PaymentResultContent = () => {
   }
 
   return (
-    <div className="max-w-2xl mx-auto my-12 px-4">
+    <div className="max-w-2xl mx-auto my-16 px-4">
       {success ? (
         <div className="bg-white rounded-[40px] border border-gray-100 shadow-2xl p-10 text-center relative overflow-hidden">
           {/* Top aesthetic accent */}
           <div className="absolute top-0 left-0 right-0 h-3 bg-red-600"></div>
 
-          {/* Large success circle */}
+          {/* Large success circle with Lucide CheckCircle */}
           <div className="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner">
-            <svg className="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
-            </svg>
+            <CheckCircle className="text-green-500 w-16 h-16" />
           </div>
 
-          <h1 className="text-3xl font-black text-gray-900 mb-2 tracking-tight">Thanh Toán Thành Công!</h1>
+          <h1 className="text-3xl font-black text-gray-900 mb-2 tracking-tight">Thanh toán thành công</h1>
           <p className="text-gray-500 font-medium mb-8">Cảm ơn bạn đã tin tưởng mua sắm tại FPT-Market</p>
 
           <div className="bg-gray-50 rounded-3xl p-6 mb-8 border border-gray-100 text-left space-y-4">
@@ -111,13 +114,13 @@ const PaymentResultContent = () => {
               href={`/my-orders/${paymentDetails?.orderId}`}
               className="flex-1 py-5 bg-red-600 hover:bg-red-700 text-white font-black text-lg rounded-2xl shadow-xl shadow-red-100 transition-all text-center"
             >
-              XEM ĐƠN HÀNG
+              Xem đơn hàng
             </Link>
             <Link 
-              href="/"
+              href="/products"
               className="flex-1 py-5 bg-gray-50 hover:bg-gray-100 text-gray-700 font-extrabold text-lg rounded-2xl border border-gray-200 transition-all text-center"
             >
-              TIẾP TỤC MUA SẮM
+              Tiếp tục mua sắm
             </Link>
           </div>
         </div>
@@ -126,14 +129,12 @@ const PaymentResultContent = () => {
           {/* Top aesthetic accent */}
           <div className="absolute top-0 left-0 right-0 h-3 bg-red-600"></div>
 
-          {/* Large failure circle */}
+          {/* Large failure circle with Lucide XCircle */}
           <div className="w-24 h-24 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner">
-            <svg className="w-12 h-12 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <XCircle className="text-red-500 w-16 h-16" />
           </div>
 
-          <h1 className="text-3xl font-black text-gray-900 mb-2 tracking-tight">Thanh Toán Thất Bại</h1>
+          <h1 className="text-3xl font-black text-gray-900 mb-2 tracking-tight">Thanh toán thất bại hoặc đã bị hủy</h1>
           <p className="text-gray-500 font-medium mb-8">Giao dịch của bạn đã bị hủy hoặc không thể hoàn thành</p>
 
           <div className="bg-red-50/50 rounded-3xl p-6 mb-8 border border-red-100 text-center">
@@ -144,16 +145,16 @@ const PaymentResultContent = () => {
 
           <div className="flex flex-col sm:flex-row gap-4">
             <Link 
-              href="/checkout"
+              href={paymentDetails?.orderId ? `/my-orders/${paymentDetails?.orderId}` : '/my-orders'}
               className="flex-1 py-5 bg-red-600 hover:bg-red-700 text-white font-black text-lg rounded-2xl shadow-xl shadow-red-100 transition-all text-center"
             >
-              THỬ LẠI
+              Xem đơn hàng
             </Link>
             <Link 
-              href="/my-orders"
+              href="/"
               className="flex-1 py-5 bg-gray-50 hover:bg-gray-100 text-gray-700 font-extrabold text-lg rounded-2xl border border-gray-200 transition-all text-center"
             >
-              VỀ ĐƠN HÀNG
+              Về trang chủ
             </Link>
           </div>
         </div>

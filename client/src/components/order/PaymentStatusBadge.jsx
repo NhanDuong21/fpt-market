@@ -4,8 +4,16 @@ import React from 'react';
 import { getPaymentStatusLabel, getPaymentStatusBadgeClass } from '@/utils/paymentStatus';
 
 const PaymentStatusBadge = ({ method, status }) => {
-  const label = getPaymentStatusLabel(method, status);
-  const badgeClass = getPaymentStatusBadgeClass(method, status);
+  if (method === 'COD') {
+    return (
+      <span className="inline-flex items-center px-3 py-1 rounded-xl text-xs font-bold uppercase tracking-wider bg-gray-100 text-gray-600 border border-gray-200">
+        Thanh toán khi nhận hàng
+      </span>
+    );
+  }
+
+  const label = getPaymentStatusLabel(status);
+  const badgeClass = getPaymentStatusBadgeClass(status);
 
   return (
     <span className={`inline-flex items-center px-3 py-1 rounded-xl text-xs font-bold uppercase tracking-wider ${badgeClass}`}>

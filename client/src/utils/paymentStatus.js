@@ -1,11 +1,10 @@
 export const getPaymentMethodLabel = (method) => {
-  if (method === 'COD') return 'COD';
+  if (method === 'COD') return 'Thanh toán khi nhận hàng';
   if (method === 'VNPAY') return 'VNPay';
-  return method;
+  return method || 'Không xác định';
 };
 
-export const getPaymentStatusLabel = (method, status) => {
-  if (method === 'COD') return 'Thanh toán khi nhận hàng';
+export const getPaymentStatusLabel = (status) => {
   switch (status) {
     case 'PENDING': return 'Chờ thanh toán';
     case 'PAID': return 'Đã thanh toán';
@@ -15,13 +14,12 @@ export const getPaymentStatusLabel = (method, status) => {
   }
 };
 
-export const getPaymentStatusBadgeClass = (method, status) => {
-  if (method === 'COD') return 'bg-gray-100 text-gray-800 border border-gray-200';
+export const getPaymentStatusBadgeClass = (status) => {
   switch (status) {
-    case 'PENDING': return 'bg-yellow-100 text-yellow-800 border border-yellow-200';
-    case 'PAID': return 'bg-green-100 text-green-800 border border-green-200';
+    case 'PENDING': return 'bg-yellow-50 text-yellow-600 border border-yellow-200';
+    case 'PAID': return 'bg-green-50 text-green-600 border border-green-200';
     case 'FAILED':
-    case 'CANCELLED': return 'bg-red-100 text-red-800 border border-red-200';
-    default: return 'bg-gray-100 text-gray-800 border border-gray-200';
+    case 'CANCELLED': return 'bg-red-50 text-red-600 border border-red-200';
+    default: return 'bg-gray-50 text-gray-600 border border-gray-200';
   }
 };
