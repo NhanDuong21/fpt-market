@@ -5,6 +5,8 @@ import adminService from '@/services/adminService';
 import Badge from '@/components/common/Badge';
 import { toast } from 'react-toastify';
 import PageContainer from '@/components/layout/PageContainer';
+import PaymentStatusBadge from '@/components/order/PaymentStatusBadge';
+import { getPaymentMethodLabel } from '@/utils/paymentStatus';
 
 export default function AdminOrdersPage() {
     const [orders, setOrders] = useState([]);
@@ -47,6 +49,7 @@ export default function AdminOrdersPage() {
                                     <th className="px-8 py-5 text-xs font-black text-gray-400 uppercase tracking-widest">Người mua</th>
                                     <th className="px-8 py-5 text-xs font-black text-gray-400 uppercase tracking-widest">Tổng tiền</th>
                                     <th className="px-8 py-5 text-xs font-black text-gray-400 uppercase tracking-widest">Trạng thái</th>
+                                    <th className="px-8 py-5 text-xs font-black text-gray-400 uppercase tracking-widest">Thanh toán</th>
                                     <th className="px-8 py-5 text-xs font-black text-gray-400 uppercase tracking-widest text-right">Ngày đặt</th>
                                 </tr>
                             </thead>
@@ -62,7 +65,7 @@ export default function AdminOrdersPage() {
                                         <tr key={order.id} className="hover:bg-red-50/30 transition-colors group">
                                             <td className="px-8 py-5">
                                                 <div className="font-black text-gray-900 text-lg">#{order.id}</div>
-                                                <div className="text-xs text-gray-400 font-medium uppercase tracking-tighter">{order.paymentMethod}</div>
+                                                <div className="text-xs text-gray-400 font-medium uppercase tracking-tighter">{getPaymentMethodLabel(order.paymentMethod)}</div>
                                             </td>
                                             <td className="px-8 py-5">
                                                 <div className="text-sm font-black text-gray-900">{order.fullName}</div>
@@ -74,6 +77,9 @@ export default function AdminOrdersPage() {
                                             </td>
                                             <td className="px-8 py-5">
                                                 <Badge status={order.status} />
+                                            </td>
+                                            <td className="px-8 py-5">
+                                                <PaymentStatusBadge method={order.paymentMethod} status={order.paymentDetails?.paymentStatus} />
                                             </td>
                                             <td className="px-8 py-5 text-right">
                                                 <div className="text-sm font-bold text-gray-900">{new Date(order.createdAt).toLocaleDateString('vi-VN')}</div>

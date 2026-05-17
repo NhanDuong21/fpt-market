@@ -4,6 +4,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import sellerOrderService from '@/services/sellerOrderService';
 import OrderStatusBadge from '@/components/order/OrderStatusBadge';
+import PaymentStatusBadge from '@/components/order/PaymentStatusBadge';
+import { getPaymentMethodLabel } from '@/utils/paymentStatus';
 import SellerOrderActionButtons from '@/components/seller/SellerOrderActionButtons';
 import Link from 'next/link';
 import SafeImage from '@/components/common/SafeImage';
@@ -62,6 +64,7 @@ export default function SellerOrderDetailPage() {
             </div>
           </div>
           <div className="flex items-center gap-6">
+            <PaymentStatusBadge method={order.paymentMethod} status={order.paymentStatus} />
             <OrderStatusBadge status={order.status} />
             <SellerOrderActionButtons order={order} onUpdate={fetchOrder} />
           </div>
@@ -118,7 +121,11 @@ export default function SellerOrderDetailPage() {
               <div className="space-y-3 mb-6">
                 <div className="flex justify-between text-gray-500 font-medium">
                   <span>Phương thức</span>
-                  <span className="font-bold text-gray-900">{order.paymentMethod}</span>
+                  <span className="font-bold text-gray-900">{getPaymentMethodLabel(order.paymentMethod)}</span>
+                </div>
+                <div className="flex justify-between items-center text-gray-500 font-medium">
+                  <span>Thanh toán</span>
+                  <PaymentStatusBadge method={order.paymentMethod} status={order.paymentStatus} />
                 </div>
                 <div className="flex justify-between text-gray-500 font-medium">
                   <span>Vận chuyển</span>

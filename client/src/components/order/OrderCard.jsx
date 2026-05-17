@@ -4,6 +4,8 @@ import React from 'react';
 import Link from 'next/link';
 import SafeImage from '@/components/common/SafeImage';
 import OrderStatusBadge from './OrderStatusBadge';
+import PaymentStatusBadge from './PaymentStatusBadge';
+import { getPaymentMethodLabel } from '@/utils/paymentStatus';
 
 const OrderCard = ({ order }) => {
   const firstItem = order.items?.[0];
@@ -16,9 +18,7 @@ const OrderCard = ({ order }) => {
           Đơn hàng #{order.id}
         </div>
         <div className="flex gap-2 flex-wrap">
-          {order.paymentDetails && (
-            <OrderStatusBadge status={order.paymentDetails.paymentStatus} type="payment" />
-          )}
+          <PaymentStatusBadge method={order.paymentMethod} status={order.paymentDetails?.paymentStatus} />
           <OrderStatusBadge status={order.status} />
         </div>
       </div>
@@ -34,7 +34,7 @@ const OrderCard = ({ order }) => {
           </div>
           <div className="text-lg font-black text-red-600 mt-1">{order.totalAmount.toLocaleString()}đ</div>
           <div className="text-xs text-gray-400 mt-1 font-semibold">
-            Phương thức: <span className="text-gray-600 font-black">{order.paymentMethod === 'VNPAY' ? 'Ví VNPay' : 'COD'}</span>
+            Phương thức: <span className="text-gray-600 font-black">{getPaymentMethodLabel(order.paymentMethod)}</span>
           </div>
         </div>
       </div>

@@ -4,6 +4,8 @@ import React, { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import paymentService from '@/services/paymentService';
 import Link from 'next/link';
+import PaymentStatusBadge from '@/components/order/PaymentStatusBadge';
+import { getPaymentMethodLabel } from '@/utils/paymentStatus';
 
 const PaymentResultContent = () => {
   const searchParams = useSearchParams();
@@ -78,7 +80,9 @@ const PaymentResultContent = () => {
             </div>
             <div className="flex justify-between items-center pb-3 border-b border-gray-200">
               <span className="text-sm font-bold text-gray-400 uppercase tracking-wider">Phương thức</span>
-              <span className="font-extrabold text-red-600 bg-red-50 px-3 py-1 rounded-xl text-xs uppercase">VNPay E-Wallet</span>
+              <span className="font-extrabold text-red-600 bg-red-50 px-3 py-1 rounded-xl text-xs uppercase">
+                {getPaymentMethodLabel(paymentDetails?.paymentMethod)}
+              </span>
             </div>
             <div className="flex justify-between items-center pb-3 border-b border-gray-200">
               <span className="text-sm font-bold text-gray-400 uppercase tracking-wider">Số tiền thanh toán</span>
@@ -88,7 +92,7 @@ const PaymentResultContent = () => {
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm font-bold text-gray-400 uppercase tracking-wider">Trạng thái</span>
-              <span className="font-extrabold text-green-700 bg-green-50 px-3 py-1 rounded-xl text-xs">ĐÃ THANH TOÁN</span>
+              <PaymentStatusBadge method={paymentDetails?.paymentMethod} status={paymentDetails?.paymentStatus} />
             </div>
           </div>
 

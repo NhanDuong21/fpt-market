@@ -25,10 +25,12 @@ public class SellerOrderServiceImpl implements SellerOrderService {
 
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
+    private final com.fptmarket.repository.PaymentRepository paymentRepository;
 
-    public SellerOrderServiceImpl(OrderRepository orderRepository, UserRepository userRepository) {
+    public SellerOrderServiceImpl(OrderRepository orderRepository, UserRepository userRepository, com.fptmarket.repository.PaymentRepository paymentRepository) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
+        this.paymentRepository = paymentRepository;
     }
 
     @Override
@@ -167,6 +169,10 @@ public class SellerOrderServiceImpl implements SellerOrderService {
                         .build())
                 .collect(Collectors.toList());
 
+        PaymentStatus paymentStatus = paymentRepository.findByOrderId(order.getId())
+                .map(Payment::getPaymentStatus)
+                .orElse(PaymentStatus.PENDING);
+
         return SellerOrderResponse.builder()
                 .id(order.getId())
                 .fullName(order.getFullName())
@@ -176,6 +182,7 @@ public class SellerOrderServiceImpl implements SellerOrderService {
                 .totalItems(totalItems)
                 .status(order.getStatus())
                 .paymentMethod(order.getPaymentMethod())
+                .paymentStatus(paymentStatus)
                 .items(itemResponses)
                 .createdAt(order.getCreatedAt())
                 .updatedAt(order.getUpdatedAt())

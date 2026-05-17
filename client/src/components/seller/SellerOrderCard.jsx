@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import SafeImage from '@/components/common/SafeImage';
 import OrderStatusBadge from '@/components/order/OrderStatusBadge';
+import PaymentStatusBadge from '@/components/order/PaymentStatusBadge';
 
 const SellerOrderCard = ({ order }) => {
   const firstItem = order.items?.[0];
@@ -15,7 +16,10 @@ const SellerOrderCard = ({ order }) => {
         <div className="text-sm text-gray-400 font-bold uppercase tracking-widest">
           Đơn bán #{order.id}
         </div>
-        <OrderStatusBadge status={order.status} />
+        <div className="flex gap-2 flex-wrap items-center">
+          <PaymentStatusBadge method={order.paymentMethod} status={order.paymentStatus} />
+          <OrderStatusBadge status={order.status} />
+        </div>
       </div>
 
       <div className="flex gap-4 mb-6">

@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import OrderStatusBadge from '@/components/order/OrderStatusBadge';
+import PaymentStatusBadge from '@/components/order/PaymentStatusBadge';
 
 const SellerOrderTable = ({ orders }) => {
   return (
@@ -14,6 +15,7 @@ const SellerOrderTable = ({ orders }) => {
             <th scope="col" className="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-widest">Khách hàng</th>
             <th scope="col" className="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-widest">Ngày đặt</th>
             <th scope="col" className="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-widest">Trạng thái</th>
+            <th scope="col" className="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-widest">Thanh toán</th>
             <th scope="col" className="px-6 py-4 text-center text-xs font-bold text-gray-400 uppercase tracking-widest">Số lượng</th>
             <th scope="col" className="px-6 py-4 text-right text-xs font-bold text-gray-400 uppercase tracking-widest">Thu nhập</th>
             <th scope="col" className="px-6 py-4 text-center text-xs font-bold text-gray-400 uppercase tracking-widest">Thao tác</th>
@@ -33,6 +35,9 @@ const SellerOrderTable = ({ orders }) => {
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm">
                 <OrderStatusBadge status={order.status} />
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm">
+                <PaymentStatusBadge method={order.paymentMethod} status={order.paymentStatus} />
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-600 font-semibold">
                 {order.totalItems}

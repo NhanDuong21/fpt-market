@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import SafeImage from '@/components/common/SafeImage';
 import OrderStatusBadge from './OrderStatusBadge';
+import PaymentStatusBadge from './PaymentStatusBadge';
+import { getPaymentMethodLabel } from '@/utils/paymentStatus';
 import orderService from '@/services/orderService';
 import { toast } from 'react-toastify';
 import { canBuyerCancelOrder } from '@/utils/orderStatus';
@@ -38,9 +40,7 @@ const OrderDetail = ({ order, onUpdate }) => {
           </div>
         </div>
         <div className="flex items-center gap-4 flex-wrap">
-          {order.paymentDetails && (
-            <OrderStatusBadge status={order.paymentDetails.paymentStatus} type="payment" />
-          )}
+          <PaymentStatusBadge method={order.paymentMethod} status={order.paymentDetails?.paymentStatus} />
           <OrderStatusBadge status={order.status} />
           {canCancel && (
             <button 
@@ -105,21 +105,13 @@ const OrderDetail = ({ order, onUpdate }) => {
             <div className="space-y-3 mb-6">
               <div className="flex justify-between text-gray-500 font-medium">
                 <span>Phương thức</span>
-                <span className="font-bold text-gray-900">{order.paymentMethod === 'VNPAY' ? 'Ví điện tử VNPay' : 'COD'}</span>
+                <span className="font-bold text-gray-900">{getPaymentMethodLabel(order.paymentMethod)}</span>
               </div>
               {order.paymentDetails && (
                 <>
-                  <div className="flex justify-between text-gray-500 font-medium">
+                  <div className="flex justify-between items-center text-gray-500 font-medium">
                     <span>Thanh toán</span>
-                    <span className={`font-extrabold px-3 py-0.5 rounded-lg text-xs ${
-                      order.paymentDetails.paymentStatus === 'PAID' ? 'text-green-700 bg-green-50' : 
-                      order.paymentDetails.paymentStatus === 'PENDING' ? 'text-amber-700 bg-amber-50' : 
-                      'text-red-700 bg-red-50'
-                    }`}>
-                      {order.paymentDetails.paymentStatus === 'PAID' ? 'Đã thanh toán' : 
-                       order.paymentDetails.paymentStatus === 'PENDING' ? 'Chờ thanh toán' : 
-                       order.paymentDetails.paymentStatus === 'FAILED' ? 'Thanh toán thất bại' : 'Đã hủy'}
-                    </span>
+                    <PaymentStatusBadge method={order.paymentMethod} status={order.paymentDetails.paymentStatus} />
                   </div>
                   {order.paymentDetails.transactionNo && (
                     <div className="flex justify-between text-gray-500 font-medium">

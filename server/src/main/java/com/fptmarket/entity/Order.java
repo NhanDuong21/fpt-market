@@ -1,3 +1,9 @@
+/* SQL MIGRATION:
+ALTER TABLE orders MODIFY COLUMN payment_method VARCHAR(20) NOT NULL;
+ALTER TABLE payments MODIFY COLUMN payment_method VARCHAR(20) NOT NULL;
+ALTER TABLE payments MODIFY COLUMN payment_status VARCHAR(20) NOT NULL;
+ALTER TABLE orders MODIFY COLUMN status VARCHAR(20) NOT NULL;
+*/
 package com.fptmarket.entity;
 
 import jakarta.persistence.*;
@@ -38,11 +44,11 @@ public class Order {
     private BigDecimal totalAmount;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "status", length = 20, nullable = false)
     private OrderStatus status;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "payment_method", length = 20, nullable = false)
     private PaymentMethod paymentMethod;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
