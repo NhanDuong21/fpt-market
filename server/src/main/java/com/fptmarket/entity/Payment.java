@@ -1,9 +1,11 @@
-/* SQL MIGRATION:
-ALTER TABLE orders MODIFY COLUMN payment_method VARCHAR(20) NOT NULL;
-ALTER TABLE payments MODIFY COLUMN payment_method VARCHAR(20) NOT NULL;
-ALTER TABLE payments MODIFY COLUMN payment_status VARCHAR(20) NOT NULL;
-ALTER TABLE orders MODIFY COLUMN status VARCHAR(20) NOT NULL;
-*/
+/*
+ * SQL MIGRATION NOTE:
+ * Run the following commands in MySQL Workbench if encountering "Data truncated" errors:
+ * ALTER TABLE orders MODIFY COLUMN payment_method VARCHAR(20) NOT NULL;
+ * ALTER TABLE payments MODIFY COLUMN payment_method VARCHAR(20) NOT NULL;
+ * ALTER TABLE payments MODIFY COLUMN payment_status VARCHAR(20) NOT NULL;
+ * ALTER TABLE orders MODIFY COLUMN status VARCHAR(20) NOT NULL;
+ */
 package com.fptmarket.entity;
 
 import jakarta.persistence.*;
