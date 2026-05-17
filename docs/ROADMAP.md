@@ -18,8 +18,9 @@ The development of FPT-Market is divided into strategic phases to ensure a stabl
 - [ ] Implement Review & Rating module.
 - [ ] Momo E-Wallet payment integration.
 - [ ] Advanced product search with Elasticsearch (or robust SQL Full-Text).
-- [ ] Wishlist functionality.
+- [x] Wishlist functionality (in progress).
 - [x] Seller Portal: Allow users to submit products for admin approval.
+- [x] Seller Order Dashboard: Isolated order views, status transition pipeline, and Vietnamese label translations.
 
 ## Phase 3: Analytics and Optimization
 *Focus: Data-driven insights and performance scaling.*

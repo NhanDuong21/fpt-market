@@ -20,8 +20,8 @@ Integrates with Cloudinary (or similar providers) for uploading, compressing, an
 ## 6. Cart Module
 Manages the user's shopping cart state, syncing local additions with the backend database. Calculates sub-totals before checkout.
 
-## 7. Order Processing Module
-The most critical transactional module. Converts a Cart into an Order, creates historical Snapshots for `order_items`, and manages the order status lifecycle (PENDING -> PROCESSING -> SHIPPED -> DELIVERED).
+## 7. Order Processing & Seller Dashboard Module
+The most critical transactional module. Converts a Cart into an Order, creates historical Snapshots for `order_items`, and manages the order status lifecycle (PENDING -> CONFIRMED -> SHIPPING -> COMPLETED). Features a dedicated Seller Order Dashboard separating seller-specific revenues, and full Vietnamese translation translations on status flags.
 
 ## 8. Payment Gateway Module
 Integrates external payment providers. Currently responsible for generating VNPay Sandbox URLs, validating HMAC-SHA512 callbacks, and updating the Order payment status securely.

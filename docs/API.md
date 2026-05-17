@@ -101,35 +101,53 @@ Every HTTP response (both success and error) MUST adhere to the following JSON s
 
 ### 6. Cart Management (User)
 
-**GET** `/api/v1/cart`
+**GET** `/api/cart`
 - Fetches current user's cart (creates one if it doesn't exist).
 
-**POST** `/api/v1/cart/items`
+**POST** `/api/cart/items`
 - **Body**: `{ "productId": Long, "quantity": Integer }`
 - Adds item to cart. Validates stock and ownership.
 
-**PUT** `/api/v1/cart/items/{id}`
+**PUT** `/api/cart/items/{id}`
 - **Params**: `quantity`
 - Updates quantity of a cart item.
 
-**DELETE** `/api/v1/cart/items/{id}`
+**DELETE** `/api/cart/items/{id}`
 - Removes an item from cart.
 
-**DELETE** `/api/v1/cart/clear`
+**DELETE** `/api/cart/clear`
 - Clears all items from current user's cart.
 
 ### 7. Order Management (User)
 
-**POST** `/api/v1/orders`
+**POST** `/api/orders`
 - **Body**: `{ "fullName": "String", "phone": "String", "shippingAddress": "String" }`
 - Creates a new order (COD only). Deducts stock and snapshots product info.
 
-**GET** `/api/v1/orders/my`
+**GET** `/api/orders/my`
 - **Params**: `page`, `size`
 - Lists current user's orders (descending by date).
 
-**GET** `/api/v1/orders/{id}`
+**GET** `/api/orders/{id}`
 - Fetches detailed info of a specific order.
 
-**PUT** `/api/v1/orders/{id}/cancel`
+**PUT** `/api/orders/{id}/cancel`
 - Cancels a PENDING or CONFIRMED order and restores stock.
+
+### 8. Seller Order Operations (User - Seller Role)
+
+**GET** `/api/seller/orders`
+- **Params**: `page`, `size`
+- Fetches incoming orders containing products owned by the active seller (filtered isolation).
+
+**GET** `/api/seller/orders/{id}`
+- Fetches isolated detailed invoice containing strictly the active seller's items in the order.
+
+**PUT** `/api/seller/orders/{id}/confirm`
+- Transitions order status from PENDING to CONFIRMED.
+
+**PUT** `/api/seller/orders/{id}/ship`
+- Transitions order status from CONFIRMED to SHIPPING.
+
+**PUT** `/api/seller/orders/{id}/complete`
+- Transitions order status from SHIPPING to COMPLETED (marks product status as SOLD if quantity <= 0).

@@ -126,15 +126,43 @@ public class ProductServiceImpl implements ProductService {
             throw new AppException("You are not allowed to update this product", ErrorCode.FORBIDDEN.getCode());
         }
 
+        if (product.getStatus() == ProductStatus.SOLD) {
+            throw new AppException("Cannot update a sold product", ErrorCode.BAD_REQUEST.getCode());
+        }
+
+        boolean coreDetailsChanged = !product.getName().equals(request.getName())
+                || product.getPrice().compareTo(request.getPrice()) != 0
+                || !product.getDescription().equals(request.getDescription())
+                || (images != null && !images.isEmpty());
+
+        if (product.getStatus() == ProductStatus.APPROVED) {
+            if (coreDetailsChanged) {
+                product.setStatus(ProductStatus.PENDING);
+            }
+        } else {
+            product.setStatus(ProductStatus.PENDING);
+        }
+
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new AppException("Category not found", ErrorCode.NOT_FOUND.getCode()));
 
         productMapper.updateEntity(request, product);
         product.setCategory(category);
         product.setSlug(generateSlug(request.getName()));
-        product.setStatus(ProductStatus.PENDING); // Reset to PENDING after edit
 
         if (images != null && !images.isEmpty()) {
+            // Delete old images from Cloudinary and clear product image relations
+            for (ProductImage oldImage : new java.util.ArrayList<>(product.getImages())) {
+                if (oldImage.getPublicId() != null) {
+                    try {
+                        cloudinaryService.deleteImage(oldImage.getPublicId());
+                    } catch (IOException e) {
+                        log.warn("Failed to delete image from Cloudinary during product update: {}", oldImage.getPublicId(), e);
+                    }
+                }
+                product.removeImage(oldImage);
+            }
+
             for (MultipartFile file : images) {
                 try {
                     Map<String, Object> uploadResult = cloudinaryService.uploadImage(file);

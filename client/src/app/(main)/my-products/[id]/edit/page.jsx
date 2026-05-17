@@ -33,6 +33,7 @@ export default function EditProductPage() {
                 quantity: product.quantity,
                 conditionType: product.conditionType,
                 categoryId: product.category?.id.toString(),
+                images: product.images?.map(img => img.imageUrl) || [],
             });
         } catch (error) {
             console.error('Failed to fetch data', error);

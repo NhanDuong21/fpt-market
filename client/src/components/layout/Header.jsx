@@ -36,7 +36,7 @@ export default function Header() {
 
                         {/* Sell Button */}
                         <Link 
-                            href="/my-products/new" 
+                            href={user ? "/my-products/new" : `/login?redirect=${encodeURIComponent('/my-products/new')}`}
                             className="hidden sm:flex items-center gap-2 px-4 py-2 bg-white text-red-600 font-bold rounded-xl shadow-sm hover:bg-gray-100 transition-all text-sm"
                         >
                             <PlusCircle className="w-4 h-4" />
@@ -62,16 +62,36 @@ export default function Header() {
                                             <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Tài khoản</p>
                                             <p className="text-sm font-bold text-gray-900 truncate">{user.email}</p>
                                         </div>
-                                        <Link href="/profile" className="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 transition-all">
-                                            <User className="w-4 h-4" /> Trang cá nhân
-                                        </Link>
-                                        <Link href="/my-products" className="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 transition-all">
-                                            <LayoutDashboard className="w-4 h-4" /> Quản lý tin đăng
-                                        </Link>
-                                        {user.role === 'ADMIN' && (
-                                            <Link href="/admin" className="flex items-center gap-3 px-4 py-3 text-sm text-red-600 font-bold hover:bg-red-50 transition-all">
-                                                <Settings className="w-4 h-4" /> Admin Panel
-                                            </Link>
+                                        {user.role === 'ADMIN' ? (
+                                            <>
+                                                <Link href="/admin" className="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 transition-all">
+                                                    <LayoutDashboard className="w-4 h-4" /> Dashboard
+                                                </Link>
+                                                <Link href="/admin/categories" className="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 transition-all">
+                                                    <Settings className="w-4 h-4" /> Quản lý danh mục
+                                                </Link>
+                                                <Link href="/admin/products" className="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 transition-all">
+                                                    <PlusCircle className="w-4 h-4" /> Quản lý sản phẩm
+                                                </Link>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Link href="/profile" className="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 transition-all">
+                                                    <User className="w-4 h-4" /> Hồ sơ
+                                                </Link>
+                                                <Link href="/my-products/new" className="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 transition-all">
+                                                    <PlusCircle className="w-4 h-4" /> Đăng bán
+                                                </Link>
+                                                <Link href="/my-products" className="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 transition-all">
+                                                    <LayoutDashboard className="w-4 h-4" /> Sản phẩm của tôi
+                                                </Link>
+                                                <Link href="/my-orders" className="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 transition-all">
+                                                    <ShoppingCart className="w-4 h-4" /> Đơn mua
+                                                </Link>
+                                                <Link href="/seller/orders" className="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 transition-all">
+                                                    <Settings className="w-4 h-4" /> Đơn bán
+                                                </Link>
+                                            </>
                                         )}
                                         <button 
                                             onClick={logout}

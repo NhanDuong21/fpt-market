@@ -3,7 +3,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Button from '../common/Button';
 
 const productSchema = z.object({
@@ -19,6 +19,12 @@ export default function ProductForm({ categories, initialData, onSubmit, loading
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [previews, setPreviews] = useState([]);
     const fileInputRef = useRef(null);
+
+    useEffect(() => {
+        if (initialData?.images) {
+            setPreviews(initialData.images);
+        }
+    }, [initialData]);
 
     const {
         register,
@@ -39,19 +45,37 @@ export default function ProductForm({ categories, initialData, onSubmit, loading
             return isValidSize;
         });
 
-        const newFiles = [...selectedFiles, ...validFiles];
-        setSelectedFiles(newFiles);
+        const isFirstUpload = selectedFiles.length === 0;
+        
+        setSelectedFiles(prev => {
+            if (isFirstUpload && initialData?.images) {
+                return validFiles;
+            }
+            return [...prev, ...validFiles];
+        });
 
         const newPreviews = validFiles.map(file => URL.createObjectURL(file));
-        setPreviews(prev => [...prev, ...newPreviews]);
+        setPreviews(prev => {
+            if (isFirstUpload && initialData?.images) {
+                return newPreviews;
+            }
+            return [...prev, ...newPreviews];
+        });
     };
 
     const removeFile = (index) => {
-        setSelectedFiles(prev => prev.filter((_, i) => i !== index));
-        setPreviews(prev => {
-            URL.revokeObjectURL(prev[index]);
-            return prev.filter((_, i) => i !== index);
-        });
+        // If it's a blob url, revoke it to avoid memory leak
+        if (previews[index]?.startsWith('blob:')) {
+            URL.revokeObjectURL(previews[index]);
+        }
+        
+        const isFromFiles = selectedFiles.length > 0;
+        if (isFromFiles) {
+            // Find index inside selectedFiles. Since previews could have started from initialData.images, 
+            // the index inside selectedFiles matches index if overwritten, or we can just filter
+            setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+        }
+        setPreviews(prev => prev.filter((_, i) => i !== index));
     };
 
     const onFormSubmit = (data) => {
