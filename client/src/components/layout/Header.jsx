@@ -2,12 +2,14 @@
 
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import { useCart } from '@/context/CartContext';
 import SearchBar from '@/components/common/SearchBar';
 import { ShoppingCart, User, LogOut, PlusCircle, LayoutDashboard, Settings } from 'lucide-react';
 import { useState } from 'react';
 
 export default function Header() {
     const { user, logout } = useAuth();
+    const { cartCount } = useCart();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     return (
@@ -29,7 +31,7 @@ export default function Header() {
                         {/* Cart */}
                         <Link href="/cart" className="p-2 text-white hover:bg-red-700 rounded-full transition-all relative">
                             <ShoppingCart className="w-6 h-6" />
-                            <span className="absolute top-1 right-1 w-4 h-4 bg-white text-red-600 text-[10px] font-bold rounded-full flex items-center justify-center">0</span>
+                            <span className="absolute top-1 right-1 w-4 h-4 bg-white text-red-600 text-[10px] font-bold rounded-full flex items-center justify-center">{cartCount}</span>
                         </Link>
 
                         {/* Sell Button */}

@@ -36,10 +36,9 @@ export default function ProductDetailsPage() {
     };
 
     const handleAddToCart = async () => {
-        // ... (rest of the logic remains same)
         if (!user) {
             toast.error('Vui lòng đăng nhập để thêm vào giỏ hàng');
-            router.push('/login');
+            router.push(`/login?redirect=${encodeURIComponent(`/products/${slug}`)}`);
             return;
         }
 
@@ -49,10 +48,7 @@ export default function ProductDetailsPage() {
         }
 
         setAdding(true);
-        const success = await addToCart(product.id, quantity);
-        if (success) {
-            toast.success('Đã thêm vào giỏ hàng');
-        }
+        await addToCart(product.id, quantity);
         setAdding(false);
     };
 

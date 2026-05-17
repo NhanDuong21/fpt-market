@@ -8,10 +8,12 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/orders")
+@RequestMapping("/api/orders")
+@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
 public class OrderController {
 
     private final OrderService orderService;

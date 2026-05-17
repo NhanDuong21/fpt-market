@@ -19,8 +19,8 @@ export const CartProvider = ({ children }) => {
     }
     try {
       setLoading(true);
-      const data = await cartService.getCart();
-      setCart(data);
+      const res = await cartService.getCart();
+      setCart(res.data);
     } catch (error) {
       console.error('Failed to fetch cart:', error);
     } finally {
@@ -38,9 +38,9 @@ export const CartProvider = ({ children }) => {
       return false;
     }
     try {
-      const data = await cartService.addItem(productId, quantity);
-      setCart(data);
-      toast.success('Added to cart successfully');
+      const res = await cartService.addItem(productId, quantity);
+      setCart(res.data);
+      toast.success('Đã thêm vào giỏ hàng');
       return true;
     } catch (error) {
       const message = error.response?.data?.message || 'Failed to add to cart';
@@ -51,8 +51,8 @@ export const CartProvider = ({ children }) => {
 
   const updateQuantity = async (itemId, quantity) => {
     try {
-      const data = await cartService.updateItem(itemId, quantity);
-      setCart(data);
+      const res = await cartService.updateItem(itemId, quantity);
+      setCart(res.data);
     } catch (error) {
       const message = error.response?.data?.message || 'Failed to update quantity';
       toast.error(message);
@@ -61,9 +61,9 @@ export const CartProvider = ({ children }) => {
 
   const removeItem = async (itemId) => {
     try {
-      const data = await cartService.removeItem(itemId);
-      setCart(data);
-      toast.success('Removed from cart');
+      const res = await cartService.removeItem(itemId);
+      setCart(res.data);
+      toast.success('Đã xóa khỏi giỏ hàng');
     } catch (error) {
       toast.error('Failed to remove item');
     }

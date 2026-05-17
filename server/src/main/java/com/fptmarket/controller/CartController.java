@@ -5,10 +5,12 @@ import com.fptmarket.dto.request.CartItemRequest;
 import com.fptmarket.dto.response.CartResponse;
 import com.fptmarket.service.CartService;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/cart")
+@RequestMapping("/api/cart")
+@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
 public class CartController {
 
     private final CartService cartService;
