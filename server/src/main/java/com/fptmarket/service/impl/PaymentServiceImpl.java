@@ -45,17 +45,20 @@ public class PaymentServiceImpl implements PaymentService {
         try {
             String vnp_Version = "2.1.0";
             String vnp_Command = "pay";
-            String vnp_TxnRef = order.getId().toString();
+            String vnp_TxnRef = order.getId().toString() + "_" + System.currentTimeMillis();
             String vnp_OrderInfo = "Thanh toan don hang " + order.getId();
             String vnp_OrderType = "other";
             String vnp_Locale = "vn";
 
             long amountInCents = order.getTotalAmount().multiply(new BigDecimal(100)).longValue();
 
-            LocalDateTime now = LocalDateTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-            String vnp_CreateDate = now.format(formatter);
-            String vnp_ExpireDate = now.plusMinutes(15).format(formatter);
+            java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyyMMddHHmmss");
+            formatter.setTimeZone(java.util.TimeZone.getTimeZone("Etc/GMT+7"));
+            String vnp_CreateDate = formatter.format(new java.util.Date());
+
+            java.util.Calendar cal = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("Etc/GMT+7"));
+            cal.add(java.util.Calendar.MINUTE, 15);
+            String vnp_ExpireDate = formatter.format(cal.getTime());
 
             Map<String, String> vnp_Params = new HashMap<>();
             vnp_Params.put("vnp_Version", vnp_Version);
@@ -72,39 +75,8 @@ public class PaymentServiceImpl implements PaymentService {
             vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
             vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
 
-            List<String> fieldNames = new ArrayList<>(vnp_Params.keySet());
-            Collections.sort(fieldNames);
-
-            StringBuilder hashData = new StringBuilder();
-            StringBuilder query = new StringBuilder();
-            Iterator<String> itr = fieldNames.iterator();
-
-            while (itr.hasNext()) {
-                String fieldName = itr.next();
-                String fieldValue = vnp_Params.get(fieldName);
-                if ((fieldValue != null) && (fieldValue.length() > 0)) {
-                    // Hash data (raw or URLEncoded? VNPay 2.1.0 encodes parameters using US-ASCII / UTF-8)
-                    hashData.append(fieldName);
-                    hashData.append('=');
-                    hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()).replace("+", "%20"));
-
-                    // Query data
-                    query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII.toString()).replace("+", "%20"));
-                    query.append('=');
-                    query.append(URLEncoder.encode(fieldValue, StandardCharsets.UTF_8.toString()).replace("+", "%20"));
-
-                    if (itr.hasNext()) {
-                        query.append('&');
-                        hashData.append('&');
-                    }
-                }
-            }
-
-            String queryUrl = query.toString();
-            String vnp_SecureHash = VNPayConfig.hmacSHA512(vnPayConfig.getHashSecret(), hashData.toString());
-            queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
-
-            return vnPayConfig.getUrl() + "?" + queryUrl;
+            String queryUrlAndHash = VNPayConfig.hashAllFields(vnp_Params, vnPayConfig.getHashSecret());
+            return vnPayConfig.getUrl() + "?" + queryUrlAndHash;
 
         } catch (Exception e) {
             log.error("Failed to generate VNPay redirect URL", e);
@@ -138,7 +110,7 @@ public class PaymentServiceImpl implements PaymentService {
                 try {
                     hashData.append(fieldName);
                     hashData.append('=');
-                    hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()).replace("+", "%20"));
+                    hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
                 } catch (Exception e) {
                     log.error("Failed to URL encode field", e);
                 }
@@ -148,10 +120,10 @@ public class PaymentServiceImpl implements PaymentService {
             }
         }
 
-        String calculatedHash = VNPayConfig.hmacSHA512(vnPayConfig.getHashSecret(), hashData.toString());
-        if (!calculatedHash.equalsIgnoreCase(vnp_SecureHash)) {
-            log.error("Signature mismatch. Calculated: {}, Received: {}", calculatedHash, vnp_SecureHash);
-            throw new AppException("Chữ ký VNPay không hợp lệ", ErrorCode.BAD_REQUEST.getCode());
+        String signValue = VNPayConfig.hmacSHA512(vnPayConfig.getHashSecret(), hashData.toString());
+        if (!signValue.equals(vnp_SecureHash)) {
+            log.error("Signature mismatch. Calculated: {}, Received: {}", signValue, vnp_SecureHash);
+            throw new AppException("Sai chữ ký", ErrorCode.INVALID_SIGNATURE.getCode());
         }
 
         String vnp_TxnRef = queryParams.get("vnp_TxnRef");
@@ -159,7 +131,13 @@ public class PaymentServiceImpl implements PaymentService {
             throw new AppException("Order ID missing from callback", ErrorCode.BAD_REQUEST.getCode());
         }
 
-        Long orderId = Long.parseLong(vnp_TxnRef);
+        Long orderId;
+        if (vnp_TxnRef.contains("_")) {
+            orderId = Long.parseLong(vnp_TxnRef.split("_")[0]);
+        } else {
+            orderId = Long.parseLong(vnp_TxnRef);
+        }
+
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new AppException("Order not found", ErrorCode.NOT_FOUND.getCode()));
 
