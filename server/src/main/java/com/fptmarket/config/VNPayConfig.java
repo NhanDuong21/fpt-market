@@ -26,6 +26,9 @@ public class VNPayConfig {
     @Value("${vnpay.returnUrl}")
     private String returnUrl;
 
+    @Value("${payment.vnpay.mock:false}")
+    private boolean mock;
+
     public static String hmacSHA512(final String key, final String data) {
         try {
             if (key == null || data == null) {

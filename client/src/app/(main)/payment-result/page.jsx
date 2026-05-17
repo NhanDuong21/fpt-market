@@ -27,17 +27,27 @@ const PaymentResultContent = () => {
         }
 
         const res = await paymentService.vnpayCallback(queryString);
-        if (res.success && res.data && res.data.paymentStatus === 'PAID') {
-          setSuccess(true);
-          setPaymentDetails(res.data);
+        if (res.success && res.data) {
+          if (res.data.paymentStatus === 'PAID') {
+            setSuccess(true);
+            setPaymentDetails(res.data);
+          } else if (res.data.paymentStatus === 'CANCELLED') {
+            setSuccess(false);
+            setPaymentDetails(res.data);
+            setErrorMessage('Giao dịch thanh toán đã bị hủy bởi người dùng.');
+          } else {
+            setSuccess(false);
+            setPaymentDetails(res.data);
+            setErrorMessage('Giao dịch thanh toán không thành công hoặc thất bại.');
+          }
         } else {
           setSuccess(false);
-          setErrorMessage('Giao dịch không thành công hoặc chữ ký không hợp lệ.');
+          setErrorMessage(res?.message || 'Giao dịch không thành công hoặc chữ ký không hợp lệ.');
         }
       } catch (error) {
         console.error('Error verifying transaction:', error);
         setSuccess(false);
-        setErrorMessage(error.message || 'Đã xảy ra lỗi khi xác thực giao dịch.');
+        setErrorMessage(error.response?.data?.message || error.message || 'Đã xảy ra lỗi khi xác thực giao dịch.');
       } finally {
         setLoading(false);
       }

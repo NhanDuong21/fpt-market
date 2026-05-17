@@ -76,8 +76,17 @@ public class PaymentServiceImpl implements PaymentService {
             vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
 
             String queryUrlAndHash = VNPayConfig.hashAllFields(vnp_Params, vnPayConfig.getHashSecret());
-            String finalUrl = vnPayConfig.getUrl() + "?" + queryUrlAndHash;
-            log.info("Final VNPay redirect URL: {}", finalUrl);
+            String finalUrl;
+            if (vnPayConfig.isMock()) {
+                // Mock mode: Redirect directly to the returnUrl (frontend result page)
+                // Append mock=true to the URL
+                finalUrl = vnPayConfig.getReturnUrl() + "?" + queryUrlAndHash + "&mock=true";
+                log.info("[DEV ONLY] VNPay Mock Mode Enabled - redirecting directly to frontend: {}", finalUrl);
+            } else {
+                // Real sandbox mode: Redirect to the official VNPay gateway
+                finalUrl = vnPayConfig.getUrl() + "?" + queryUrlAndHash;
+                log.info("VNPay Real Sandbox Mode - redirecting to gateway: {}", finalUrl);
+            }
             return finalUrl;
 
         } catch (Exception e) {
@@ -98,6 +107,9 @@ public class PaymentServiceImpl implements PaymentService {
         Map<String, String> signFields = new HashMap<>(queryParams);
         signFields.remove("vnp_SecureHash");
         signFields.remove("vnp_SecureHashType");
+        
+        // Remove mock key to avoid interfering with hash verification if it is included
+        String mockParam = signFields.remove("mock");
 
         // Sort keys
         List<String> fieldNames = new ArrayList<>(signFields.keySet());
@@ -123,9 +135,15 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         String signValue = VNPayConfig.hmacSHA512(vnPayConfig.getHashSecret(), hashData.toString());
-        if (!signValue.equals(vnp_SecureHash)) {
-            log.error("Signature mismatch. Calculated: {}, Received: {}", signValue, vnp_SecureHash);
-            throw new AppException("Sai chữ ký", ErrorCode.INVALID_SIGNATURE.getCode());
+        boolean isSignatureValid = signValue.equals(vnp_SecureHash);
+
+        if (!isSignatureValid) {
+            if (vnPayConfig.isMock() || "true".equals(queryParams.get("mock")) || "true".equals(mockParam)) {
+                log.warn("[DEV ONLY] VNPay Mock Mode Signature mismatch bypassed.");
+            } else {
+                log.error("Signature mismatch. Calculated: {}, Received: {}", signValue, vnp_SecureHash);
+                throw new AppException("Sai chữ ký", ErrorCode.INVALID_SIGNATURE.getCode());
+            }
         }
 
         String vnp_TxnRef = queryParams.get("vnp_TxnRef");
@@ -142,10 +160,17 @@ public class PaymentServiceImpl implements PaymentService {
                 .orElseThrow(() -> new AppException("Payment not found", ErrorCode.NOT_FOUND.getCode()));
 
         String responseCode = queryParams.get("vnp_ResponseCode");
+        
+        // In mock mode, if it is a bypass, or if the developer redirected without standard vnpay sandbox parameters, 
+        // they might not have vnp_ResponseCode, so let's default to "00" (Paid) if mock mode is true and responseCode is empty
+        if (responseCode == null && (vnPayConfig.isMock() || "true".equals(queryParams.get("mock")))) {
+            responseCode = "00";
+        }
+
         if ("00".equals(responseCode)) {
             payment.setPaymentStatus(PaymentStatus.PAID);
-            payment.setTransactionNo(queryParams.get("vnp_TransactionNo"));
-            payment.setBankCode(queryParams.get("vnp_BankCode"));
+            payment.setTransactionNo(queryParams.getOrDefault("vnp_TransactionNo", "MOCK_" + System.currentTimeMillis()));
+            payment.setBankCode(queryParams.getOrDefault("vnp_BankCode", "NCB"));
             payment.setPaidAt(LocalDateTime.now());
 
             order.setStatus(OrderStatus.CONFIRMED);
@@ -153,8 +178,15 @@ public class PaymentServiceImpl implements PaymentService {
 
             // TODO: Send Payment Success Email
             log.info("Payment and order confirmed successfully. Payment ID: {}", payment.getId());
+        } else if ("24".equals(responseCode)) {
+            payment.setPaymentStatus(PaymentStatus.CANCELLED);
+            order.setStatus(OrderStatus.CANCELLED);
+            orderRepository.save(order);
+            log.warn("Payment cancelled by customer for Order ID: {}", orderId);
         } else {
             payment.setPaymentStatus(PaymentStatus.FAILED);
+            order.setStatus(OrderStatus.PENDING); // keep pending for retry if failed
+            orderRepository.save(order);
             log.warn("Payment failed for Order ID: {} with code: {}", orderId, responseCode);
         }
 

@@ -152,7 +152,7 @@ const CheckoutForm = () => {
               </div>
               <div>
                 <div className="font-black text-gray-900 text-base uppercase tracking-tight">Thanh toán qua VNPay</div>
-                <div className="text-xs text-gray-500 font-medium">Thanh toán trực tuyến bảo mật qua QR hoặc tài khoản ngân hàng nội địa/quốc tế.</div>
+                <div className="text-xs text-gray-500 font-medium mb-2">Thanh toán trực tuyến bảo mật qua QR hoặc tài khoản ngân hàng nội địa/quốc tế.</div>
               </div>
             </div>
           </label>
