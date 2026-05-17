@@ -88,9 +88,11 @@ public class OrderServiceImpl implements OrderService {
         for (CartItem cartItem : cart.getItems()) {
             Product product = cartItem.getProduct();
             
-            // Deduct stock
-            product.setQuantity(product.getQuantity() - cartItem.getQuantity());
-            productRepository.save(product);
+            // Deduct stock immediately ONLY if COD
+            if (request.getPaymentMethod() == PaymentMethod.COD) {
+                product.setQuantity(product.getQuantity() - cartItem.getQuantity());
+                productRepository.save(product);
+            }
 
             BigDecimal subtotal = product.getPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity()));
             totalAmount = totalAmount.add(subtotal);
@@ -129,9 +131,11 @@ public class OrderServiceImpl implements OrderService {
 
         paymentRepository.save(payment);
 
-        // Clear cart
-        cart.clearItems();
-        cartRepository.save(cart);
+        // Clear cart immediately ONLY if COD
+        if (request.getPaymentMethod() == PaymentMethod.COD) {
+            cart.clearItems();
+            cartRepository.save(cart);
+        }
 
         // TODO: Send Order Confirmation Email
         log.info("Order created successfully: {}", savedOrder.getId());

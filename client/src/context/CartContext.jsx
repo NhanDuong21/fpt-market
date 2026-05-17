@@ -92,6 +92,7 @@ export const CartProvider = ({ children }) => {
       cartCount,
       totalItems,
       setCart,
+      fetchCart,
       refreshCart: fetchCart
     }}>
       {children}

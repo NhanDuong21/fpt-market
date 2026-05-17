@@ -8,6 +8,8 @@ import com.fptmarket.exception.AppException;
 import com.fptmarket.repository.OrderRepository;
 import com.fptmarket.repository.PaymentRepository;
 import com.fptmarket.repository.UserRepository;
+import com.fptmarket.repository.CartRepository;
+import com.fptmarket.repository.ProductRepository;
 import com.fptmarket.service.PaymentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,15 +30,21 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
+    private final CartRepository cartRepository;
+    private final ProductRepository productRepository;
     private final VNPayConfig vnPayConfig;
 
     public PaymentServiceImpl(PaymentRepository paymentRepository,
                               OrderRepository orderRepository,
                               UserRepository userRepository,
+                              CartRepository cartRepository,
+                              ProductRepository productRepository,
                               VNPayConfig vnPayConfig) {
         this.paymentRepository = paymentRepository;
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
+        this.cartRepository = cartRepository;
+        this.productRepository = productRepository;
         this.vnPayConfig = vnPayConfig;
     }
 
@@ -181,6 +189,25 @@ public class PaymentServiceImpl implements PaymentService {
 
             order.setStatus(OrderStatus.CONFIRMED);
             orderRepository.save(order);
+
+            // Execute Deferred Logic: Loop through the order items, check stock, and deduct.
+            for (OrderItem orderItem : order.getItems()) {
+                Product product = orderItem.getProduct();
+                if (product != null) {
+                    if (product.getQuantity() < orderItem.getQuantity()) {
+                        throw new AppException("Sản phẩm " + product.getName() + " đã hết hàng hoặc không đủ số lượng.", ErrorCode.BAD_REQUEST.getCode());
+                    }
+                    product.setQuantity(product.getQuantity() - orderItem.getQuantity());
+                    productRepository.save(product);
+                }
+            }
+
+            // Clear the buyer's cart
+            Cart cart = cartRepository.findByUserId(order.getUser().getId()).orElse(null);
+            if (cart != null) {
+                cart.clearItems();
+                cartRepository.save(cart);
+            }
 
             // TODO: Send Payment Success Email
             log.info("Payment and order confirmed successfully. Payment ID: {}", payment.getId());

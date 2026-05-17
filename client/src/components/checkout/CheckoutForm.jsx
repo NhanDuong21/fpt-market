@@ -34,13 +34,14 @@ const CheckoutForm = () => {
   const onSubmit = async (data) => {
     try {
       const response = await orderService.createOrder(data);
-      setCart(null); // Instant local cart zeroing
-      await refreshCart();
       
       if (response.data.paymentMethod === 'VNPAY' && response.data.paymentUrl) {
         toast.success('Đang chuyển hướng đến cổng thanh toán VNPay...');
         window.location.href = response.data.paymentUrl;
       } else {
+        // For COD, the backend clears the cart, so we update the frontend state accordingly
+        setCart(null);
+        await refreshCart();
         toast.success('Đặt hàng thành công!');
         router.push(`/my-orders/${response.data.id}`);
       }

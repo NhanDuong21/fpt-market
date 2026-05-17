@@ -6,11 +6,13 @@ import paymentService from '@/services/paymentService';
 import Link from 'next/link';
 import PaymentStatusBadge from '@/components/order/PaymentStatusBadge';
 import { getPaymentMethodLabel, getPaymentStatusLabel } from '@/utils/paymentStatus';
+import { useCart } from '@/context/CartContext';
 import { CheckCircle, XCircle } from 'lucide-react';
 
 const PaymentResultContent = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { fetchCart } = useCart();
   const [loading, setLoading] = useState(true);
   const [success, setSuccess] = useState(false);
   const [paymentDetails, setPaymentDetails] = useState(null);
@@ -55,11 +57,14 @@ const PaymentResultContent = () => {
         setErrorMessage(error.response?.data?.message || error.message || 'Đã xảy ra lỗi khi xác thực giao dịch.');
       } finally {
         setLoading(false);
+        if (fetchCart) {
+          fetchCart();
+        }
       }
     };
 
     verifyTransaction();
-  }, [searchParams]);
+  }, [searchParams, fetchCart]);
 
   if (loading) {
     return (
@@ -134,7 +139,7 @@ const PaymentResultContent = () => {
             <XCircle className="text-red-500 w-16 h-16" />
           </div>
 
-          <h1 className="text-3xl font-black text-gray-900 mb-2 tracking-tight">Thanh toán thất bại hoặc đã bị hủy</h1>
+          <h1 className="text-3xl font-black text-gray-900 mb-2 tracking-tight">Thanh toán chưa hoàn tất</h1>
           <p className="text-gray-500 font-medium mb-8">Giao dịch của bạn đã bị hủy hoặc không thể hoàn thành</p>
 
           <div className="bg-red-50/50 rounded-3xl p-6 mb-8 border border-red-100 text-center">
@@ -145,10 +150,10 @@ const PaymentResultContent = () => {
 
           <div className="flex flex-col sm:flex-row gap-4">
             <Link 
-              href={paymentDetails?.orderId ? `/my-orders/${paymentDetails?.orderId}` : '/my-orders'}
+              href="/cart"
               className="flex-1 py-5 bg-red-600 hover:bg-red-700 text-white font-black text-lg rounded-2xl shadow-xl shadow-red-100 transition-all text-center"
             >
-              Xem đơn hàng
+              Quay lại giỏ hàng
             </Link>
             <Link 
               href="/"
