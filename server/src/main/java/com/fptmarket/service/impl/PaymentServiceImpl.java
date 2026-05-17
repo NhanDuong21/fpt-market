@@ -52,13 +52,13 @@ public class PaymentServiceImpl implements PaymentService {
 
             long amountInCents = order.getTotalAmount().multiply(new BigDecimal(100)).longValue();
 
-            java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyyMMddHHmmss");
-            formatter.setTimeZone(java.util.TimeZone.getTimeZone("Etc/GMT+7"));
-            String vnp_CreateDate = formatter.format(new java.util.Date());
+            java.time.ZoneId zoneId = java.time.ZoneId.of("Asia/Ho_Chi_Minh");
+            java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
-            java.util.Calendar cal = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("Etc/GMT+7"));
-            cal.add(java.util.Calendar.MINUTE, 15);
-            String vnp_ExpireDate = formatter.format(cal.getTime());
+            String vnp_CreateDate = java.time.LocalDateTime.now(zoneId).format(formatter);
+            String vnp_ExpireDate = java.time.LocalDateTime.now(zoneId).plusMinutes(15).format(formatter);
+
+            log.info("Generated VNPay Payment Attempt - TxnRef: {}, CreateDate: {}, ExpireDate: {}", vnp_TxnRef, vnp_CreateDate, vnp_ExpireDate);
 
             Map<String, String> vnp_Params = new HashMap<>();
             vnp_Params.put("vnp_Version", vnp_Version);
@@ -76,7 +76,9 @@ public class PaymentServiceImpl implements PaymentService {
             vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
 
             String queryUrlAndHash = VNPayConfig.hashAllFields(vnp_Params, vnPayConfig.getHashSecret());
-            return vnPayConfig.getUrl() + "?" + queryUrlAndHash;
+            String finalUrl = vnPayConfig.getUrl() + "?" + queryUrlAndHash;
+            log.info("Final VNPay redirect URL: {}", finalUrl);
+            return finalUrl;
 
         } catch (Exception e) {
             log.error("Failed to generate VNPay redirect URL", e);
@@ -131,12 +133,7 @@ public class PaymentServiceImpl implements PaymentService {
             throw new AppException("Order ID missing from callback", ErrorCode.BAD_REQUEST.getCode());
         }
 
-        Long orderId;
-        if (vnp_TxnRef.contains("_")) {
-            orderId = Long.parseLong(vnp_TxnRef.split("_")[0]);
-        } else {
-            orderId = Long.parseLong(vnp_TxnRef);
-        }
+        Long orderId = Long.parseLong(vnp_TxnRef.split("_")[0]);
 
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new AppException("Order not found", ErrorCode.NOT_FOUND.getCode()));
