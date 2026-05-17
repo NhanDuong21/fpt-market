@@ -42,6 +42,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/health").permitAll()
+                        .requestMatchers("/api/v1/payments/vnpay/callback", "/api/payments/vnpay/callback").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/products/**", "/api/categories/**").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/products").hasAnyAuthority("USER", "ROLE_USER")
                         .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/products/**").hasAnyAuthority("USER", "ROLE_USER")

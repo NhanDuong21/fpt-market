@@ -11,6 +11,7 @@ FPT-Market uses MySQL 8.0 as its primary relational database. The schema is high
 - **Cart** has many **CartItems** (One-to-Many).
 - **User** has many **Orders** (One-to-Many).
 - **Order** has many **OrderItems** (One-to-Many).
+- **Order** has one **Payment** (One-to-One).
 
 ## Tables
 
@@ -73,9 +74,10 @@ FPT-Market uses MySQL 8.0 as its primary relational database. The schema is high
 - `shipping_address` (VARCHAR)
 - `total_amount` (DECIMAL)
 - `status` (ENUM: 'PENDING', 'CONFIRMED', 'SHIPPING', 'COMPLETED', 'CANCELLED')
-- `payment_method` (ENUM: 'COD')
+- `payment_method` (ENUM: 'COD', 'VNPAY')
 - `created_at` (TIMESTAMP)
 - `updated_at` (TIMESTAMP)
+
 
 ### 8. Order Items
 - `id` (BIGINT, PK)
@@ -86,3 +88,17 @@ FPT-Market uses MySQL 8.0 as its primary relational database. The schema is high
 - `image_url` (VARCHAR)
 - `quantity` (INT)
 - `subtotal` (DECIMAL)
+
+### 9. Payments
+- `id` (BIGINT, PK)
+- `order_id` (BIGINT, FK, UNIQUE)
+- `payment_method` (ENUM: 'COD', 'VNPAY')
+- `payment_status` (ENUM: 'PENDING', 'PAID', 'FAILED', 'CANCELLED')
+- `amount` (DECIMAL)
+- `transaction_no` (VARCHAR)
+- `bank_code` (VARCHAR)
+- `payment_url` (VARCHAR(1000))
+- `paid_at` (TIMESTAMP)
+- `created_at` (TIMESTAMP)
+- `updated_at` (TIMESTAMP)
+

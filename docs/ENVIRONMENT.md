@@ -11,6 +11,10 @@
 | `CLOUDINARY_CLOUD_NAME` | Cloudinary Cloud Name | `placeholder` |
 | `CLOUDINARY_API_KEY` | Cloudinary API Key | `placeholder` |
 | `CLOUDINARY_API_SECRET` | Cloudinary API Secret | `placeholder` |
+| `vnp_TmnCode` | VNPay Sandbox Terminal Code | `placeholder` |
+| `vnp_HashSecret` | VNPay Sandbox Secure Hash Secret | `placeholder` |
+| `vnp_ReturnUrl` | VNPay Sandbox Redirect Return URL | `http://localhost:3000/payment-result` |
+
 
 ## Frontend (.env.local)
 

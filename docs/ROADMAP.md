@@ -9,8 +9,9 @@ The development of FPT-Market is divided into strategic phases to ensure a stabl
 - [x] Implement robust Authentication & JWT lifecycle.
 - [x] Build Product Catalog and Category navigation.
 - [x] Implement Cart and Order Processing (with Snapshot pattern).
-- [ ] Integrate VNPay Sandbox for checkout.
+- [x] Integrate VNPay Sandbox for checkout.
 - [ ] Deploy MVP to Vercel (Frontend) and Render/Railway (Backend).
+
 
 ## Phase 2: Engagement and Expansion
 *Focus: Enhancing user experience and adding alternative payment methods.*

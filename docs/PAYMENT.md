@@ -18,12 +18,25 @@ The most critical security aspect of the payment flow is validating the callback
 3. **Redirect**: The client redirects the user to the VNPay portal.
 4. **Transaction**: The user completes the transaction on VNPay.
 5. **Callback/Return**: VNPay redirects the user back to the frontend with query parameters containing the transaction status and a `vnp_SecureHash`.
-6. **Backend Verification**: 
-   - The frontend forwards these parameters to the backend `/api/v1/payments/vnpay-return` endpoint.
-   - The backend reconstructs the data string using the exact parameters received (excluding `vnp_SecureHash`).
-   - The backend recalculates the HMAC-SHA512 hash using the server-side `VNP_HASH_SECRET`.
-   - **Verification**: The backend compares the recalculated hash with the `vnp_SecureHash` provided by VNPay.
-   - **Result**: If the hashes match AND the `vnp_ResponseCode` is `00` (Success), the Order status is updated to `COMPLETED`. Otherwise, it is marked `FAILED`.
+6. **Backend Verification**:
+    - The frontend forwards these parameters to the backend `/api/v1/payments/vnpay/callback` endpoint.
+    - The backend reconstructs the data string using the exact parameters received (excluding `vnp_SecureHash` and `vnp_SecureHashType`).
+    - The backend recalculates the HMAC-SHA512 hash using the server-side `hashSecret`.
+    - **Verification**: The backend compares the recalculated hash with the `vnp_SecureHash` provided by VNPay.
+    - **Result**: If the hashes match AND the `vnp_ResponseCode` is `00` (Success), the Payment status is updated to `PAID`, and the Order status is updated to `CONFIRMED`. Otherwise, the Payment is marked `FAILED` and the Order remains in its current status.
+
+## Payment Enums & Database State
+
+### PaymentMethod
+- `COD` (Thanh toán khi nhận hàng)
+- `VNPAY` (Thanh toán qua cổng VNPay Sandbox)
+
+### PaymentStatus
+- `PENDING` (Chờ thanh toán)
+- `PAID` (Đã thanh toán thành công)
+- `FAILED` (Thanh toán thất bại)
+- `CANCELLED` (Đã hủy thanh toán)
+
 
 ## Momo Integration (Phase 2 Placeholder)
 

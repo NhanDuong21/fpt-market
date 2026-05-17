@@ -13,22 +13,37 @@ const schema = z.object({
   fullName: z.string().min(2, 'Họ tên quá ngắn'),
   phone: z.string().regex(/^[0-9]{10,11}$/, 'Số điện thoại không hợp lệ'),
   shippingAddress: z.string().min(10, 'Địa chỉ giao hàng quá ngắn (tối thiểu 10 ký tự)'),
+  paymentMethod: z.enum(['COD', 'VNPAY'], { errorMap: () => ({ message: 'Vui lòng chọn phương thức thanh toán' }) }),
 });
 
 const CheckoutForm = () => {
   const router = useRouter();
   const { cart, refreshCart, setCart } = useCart();
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
-    resolver: zodResolver(schema)
+  const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      fullName: '',
+      phone: '',
+      shippingAddress: '',
+      paymentMethod: 'COD'
+    }
   });
+
+  const watchPaymentMethod = watch('paymentMethod');
 
   const onSubmit = async (data) => {
     try {
       const response = await orderService.createOrder(data);
-      toast.success('Đặt hàng thành công!');
       setCart(null); // Instant local cart zeroing
       await refreshCart();
-      router.push(`/my-orders/${response.data.id}`);
+      
+      if (response.data.paymentMethod === 'VNPAY' && response.data.paymentUrl) {
+        toast.success('Đang chuyển hướng đến cổng thanh toán VNPay...');
+        window.location.href = response.data.paymentUrl;
+      } else {
+        toast.success('Đặt hàng thành công!');
+        router.push(`/my-orders/${response.data.id}`);
+      }
     } catch (error) {
       const message = error.response?.data?.message || 'Đã xảy ra lỗi khi đặt hàng';
       toast.error(message);
@@ -93,24 +108,56 @@ const CheckoutForm = () => {
           Phương thức thanh toán
         </h2>
         
-        <div className="p-6 border-2 border-red-600 bg-red-50 rounded-2xl flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-red-600 text-white rounded-xl flex items-center justify-center">
-              <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
+        <div className="space-y-4">
+          {/* COD Option */}
+          <label className={`flex items-center justify-between p-6 border-2 rounded-2xl cursor-pointer transition-all ${
+            watchPaymentMethod === 'COD' 
+              ? 'border-red-600 bg-red-50/50 shadow-md shadow-red-50' 
+              : 'border-gray-100 hover:border-red-200 bg-white'
+          }`}>
+            <div className="flex items-center gap-4">
+              <input 
+                type="radio" 
+                value="COD" 
+                {...register('paymentMethod')} 
+                className="w-5 h-5 text-red-600 focus:ring-red-500 border-gray-300 accent-red-600"
+              />
+              <div className="w-12 h-12 bg-red-50 text-red-600 rounded-xl flex items-center justify-center">
+                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+              <div>
+                <div className="font-black text-gray-900 text-base uppercase tracking-tight">Thanh toán khi nhận hàng (COD)</div>
+                <div className="text-xs text-gray-500 font-medium">Nhận hàng rồi mới trả tiền. An toàn 100%.</div>
+              </div>
             </div>
-            <div>
-              <div className="font-black text-gray-900 text-lg uppercase tracking-tight">Thanh toán khi nhận hàng (COD)</div>
-              <div className="text-sm text-gray-500 font-medium">Nhận hàng rồi mới trả tiền. An toàn 100%.</div>
+          </label>
+
+          {/* VNPay Option */}
+          <label className={`flex items-center justify-between p-6 border-2 rounded-2xl cursor-pointer transition-all ${
+            watchPaymentMethod === 'VNPAY' 
+              ? 'border-red-600 bg-red-50/50 shadow-md shadow-red-50' 
+              : 'border-gray-100 hover:border-red-200 bg-white'
+          }`}>
+            <div className="flex items-center gap-4">
+              <input 
+                type="radio" 
+                value="VNPAY" 
+                {...register('paymentMethod')} 
+                className="w-5 h-5 text-red-600 focus:ring-red-500 border-gray-300 accent-red-600"
+              />
+              <div className="w-12 h-12 bg-red-50 text-red-600 rounded-xl flex items-center justify-center overflow-hidden">
+                <img src="https://sandbox.vnpayment.vn/paymentv2/images/logo/vnpay_logo.png" className="w-10 h-auto object-contain" alt="VNPAY" />
+              </div>
+              <div>
+                <div className="font-black text-gray-900 text-base uppercase tracking-tight">Thanh toán qua VNPay</div>
+                <div className="text-xs text-gray-500 font-medium">Thanh toán trực tuyến bảo mật qua QR hoặc tài khoản ngân hàng nội địa/quốc tế.</div>
+              </div>
             </div>
-          </div>
-          <div className="w-6 h-6 bg-red-600 rounded-full flex items-center justify-center">
-            <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-            </svg>
-          </div>
+          </label>
         </div>
+        {errors.paymentMethod && <p className="mt-2 text-xs font-bold text-red-600 uppercase tracking-wider">{errors.paymentMethod.message}</p>}
       </div>
 
       <button 

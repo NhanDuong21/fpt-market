@@ -1,28 +1,27 @@
 package com.fptmarket.dto.response;
 
-import com.fptmarket.entity.OrderStatus;
 import com.fptmarket.entity.PaymentMethod;
+import com.fptmarket.entity.PaymentStatus;
 import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class OrderResponse {
+public class PaymentResponse {
     private Long id;
-    private String fullName;
-    private String phone;
-    private String shippingAddress;
-    private BigDecimal totalAmount;
-    private OrderStatus status;
+    private Long orderId;
     private PaymentMethod paymentMethod;
-    private List<OrderItemResponse> items;
+    private PaymentStatus paymentStatus;
+    private BigDecimal amount;
+    private String transactionNo;
+    private String bankCode;
     private String paymentUrl;
-    private PaymentResponse paymentDetails;
+    private LocalDateTime paidAt;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

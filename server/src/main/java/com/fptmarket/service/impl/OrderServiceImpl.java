@@ -3,14 +3,14 @@ package com.fptmarket.service.impl;
 import com.fptmarket.common.ErrorCode;
 import com.fptmarket.dto.request.OrderRequest;
 import com.fptmarket.dto.response.OrderResponse;
+import com.fptmarket.dto.response.PaymentResponse;
 import com.fptmarket.entity.*;
 import com.fptmarket.exception.AppException;
 import com.fptmarket.mapper.OrderMapper;
-import com.fptmarket.repository.CartRepository;
-import com.fptmarket.repository.OrderRepository;
-import com.fptmarket.repository.ProductRepository;
-import com.fptmarket.repository.UserRepository;
+import com.fptmarket.repository.*;
 import com.fptmarket.service.OrderService;
+import com.fptmarket.service.PaymentService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,18 +31,27 @@ public class OrderServiceImpl implements OrderService {
     private final CartRepository cartRepository;
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    private final PaymentRepository paymentRepository;
+    private final PaymentService paymentService;
     private final OrderMapper orderMapper;
+    private final HttpServletRequest httpServletRequest;
 
     public OrderServiceImpl(OrderRepository orderRepository, 
                             CartRepository cartRepository, 
                             ProductRepository productRepository, 
-                            UserRepository userRepository, 
-                            OrderMapper orderMapper) {
+                            UserRepository userRepository,
+                            PaymentRepository paymentRepository,
+                            PaymentService paymentService,
+                            OrderMapper orderMapper,
+                            HttpServletRequest httpServletRequest) {
         this.orderRepository = orderRepository;
         this.cartRepository = cartRepository;
         this.productRepository = productRepository;
         this.userRepository = userRepository;
+        this.paymentRepository = paymentRepository;
+        this.paymentService = paymentService;
         this.orderMapper = orderMapper;
+        this.httpServletRequest = httpServletRequest;
     }
 
     @Override
@@ -68,7 +78,7 @@ public class OrderServiceImpl implements OrderService {
                 .phone(request.getPhone())
                 .shippingAddress(request.getShippingAddress())
                 .status(OrderStatus.PENDING)
-                .paymentMethod(PaymentMethod.COD)
+                .paymentMethod(request.getPaymentMethod())
                 .totalAmount(BigDecimal.ZERO)
                 .items(new ArrayList<>())
                 .build();
@@ -102,6 +112,23 @@ public class OrderServiceImpl implements OrderService {
         order.setTotalAmount(totalAmount);
         Order savedOrder = orderRepository.save(order);
 
+        // Create Payment entity
+        Payment payment = Payment.builder()
+                .order(savedOrder)
+                .paymentMethod(request.getPaymentMethod())
+                .paymentStatus(PaymentStatus.PENDING)
+                .amount(totalAmount)
+                .build();
+
+        String paymentUrl = null;
+        if (request.getPaymentMethod() == PaymentMethod.VNPAY) {
+            String ipAddress = getClientIp(httpServletRequest);
+            paymentUrl = paymentService.createVNPayUrl(savedOrder, ipAddress);
+            payment.setPaymentUrl(paymentUrl);
+        }
+
+        paymentRepository.save(payment);
+
         // Clear cart
         cart.clearItems();
         cartRepository.save(cart);
@@ -109,14 +136,24 @@ public class OrderServiceImpl implements OrderService {
         // TODO: Send Order Confirmation Email
         log.info("Order created successfully: {}", savedOrder.getId());
 
-        return orderMapper.toResponse(savedOrder);
+        OrderResponse response = orderMapper.toResponse(savedOrder);
+        response.setPaymentUrl(paymentUrl);
+        response.setPaymentDetails(mapPaymentToResponse(payment));
+        return response;
     }
 
     @Override
     public Page<OrderResponse> getMyOrders(Pageable pageable) {
         User user = getCurrentUser();
         return orderRepository.findByUserIdOrderByCreatedAtDesc(user.getId(), pageable)
-                .map(orderMapper::toResponse);
+                .map(order -> {
+                    OrderResponse res = orderMapper.toResponse(order);
+                    paymentRepository.findByOrderId(order.getId()).ifPresent(p -> {
+                        res.setPaymentUrl(p.getPaymentUrl());
+                        res.setPaymentDetails(mapPaymentToResponse(p));
+                    });
+                    return res;
+                });
     }
 
     @Override
@@ -129,7 +166,12 @@ public class OrderServiceImpl implements OrderService {
             throw new AppException("You don't have permission to view this order", ErrorCode.FORBIDDEN.getCode());
         }
 
-        return orderMapper.toResponse(order);
+        OrderResponse res = orderMapper.toResponse(order);
+        paymentRepository.findByOrderId(order.getId()).ifPresent(p -> {
+            res.setPaymentUrl(p.getPaymentUrl());
+            res.setPaymentDetails(mapPaymentToResponse(p));
+        });
+        return res;
     }
 
     @Override
@@ -159,20 +201,68 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(OrderStatus.CANCELLED);
         Order savedOrder = orderRepository.save(order);
 
+        paymentRepository.findByOrderId(order.getId()).ifPresent(p -> {
+            p.setPaymentStatus(PaymentStatus.CANCELLED);
+            paymentRepository.save(p);
+        });
+
         // TODO: Send Order Cancellation Email
         log.info("Order cancelled successfully: {}", savedOrder.getId());
 
-        return orderMapper.toResponse(savedOrder);
+        OrderResponse res = orderMapper.toResponse(savedOrder);
+        paymentRepository.findByOrderId(order.getId()).ifPresent(p -> {
+            res.setPaymentUrl(p.getPaymentUrl());
+            res.setPaymentDetails(mapPaymentToResponse(p));
+        });
+        return res;
     }
 
     @Override
     public Page<OrderResponse> getAllOrders(Pageable pageable) {
-        return orderRepository.findAll(pageable).map(orderMapper::toResponse);
+        return orderRepository.findAll(pageable).map(order -> {
+            OrderResponse res = orderMapper.toResponse(order);
+            paymentRepository.findByOrderId(order.getId()).ifPresent(p -> {
+                res.setPaymentUrl(p.getPaymentUrl());
+                res.setPaymentDetails(mapPaymentToResponse(p));
+            });
+            return res;
+        });
     }
 
     private User getCurrentUser() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException("User not found", ErrorCode.NOT_FOUND.getCode()));
+    }
+
+    private String getClientIp(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+        return ip;
+    }
+
+    private PaymentResponse mapPaymentToResponse(Payment payment) {
+        if (payment == null) return null;
+        return PaymentResponse.builder()
+                .id(payment.getId())
+                .orderId(payment.getOrder().getId())
+                .paymentMethod(payment.getPaymentMethod())
+                .paymentStatus(payment.getPaymentStatus())
+                .amount(payment.getAmount())
+                .transactionNo(payment.getTransactionNo())
+                .bankCode(payment.getBankCode())
+                .paymentUrl(payment.getPaymentUrl())
+                .paidAt(payment.getPaidAt())
+                .createdAt(payment.getCreatedAt())
+                .updatedAt(payment.getUpdatedAt())
+                .build();
     }
 }

@@ -47,3 +47,45 @@ export const canSellerShipOrder = (status) => {
 export const canSellerCompleteOrder = (status) => {
     return status === 'SHIPPING';
 };
+
+export const getPaymentStatusLabel = (status) => {
+    switch (status) {
+        case 'PENDING':
+            return 'Chờ thanh toán';
+        case 'PAID':
+            return 'Đã thanh toán';
+        case 'FAILED':
+            return 'Thanh toán thất bại';
+        case 'CANCELLED':
+            return 'Đã hủy thanh toán';
+        default:
+            return status;
+    }
+};
+
+export const getPaymentStatusBadgeClass = (status) => {
+    switch (status) {
+        case 'PENDING':
+            return 'bg-amber-50 text-amber-600 border-amber-100';
+        case 'PAID':
+            return 'bg-emerald-50 text-emerald-600 border-emerald-100';
+        case 'FAILED':
+            return 'bg-red-50 text-red-600 border-red-100';
+        case 'CANCELLED':
+            return 'bg-gray-50 text-gray-500 border-gray-100';
+        default:
+            return 'bg-gray-50 text-gray-900 border-gray-100';
+    }
+};
+
+export const getPaymentMethodLabel = (method) => {
+    switch (method) {
+        case 'COD':
+            return 'Thanh toán khi nhận hàng (COD)';
+        case 'VNPAY':
+            return 'Ví điện tử VNPay';
+        default:
+            return method;
+    }
+};
+

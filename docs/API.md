@@ -121,8 +121,8 @@ Every HTTP response (both success and error) MUST adhere to the following JSON s
 ### 7. Order Management (User)
 
 **POST** `/api/orders`
-- **Body**: `{ "fullName": "String", "phone": "String", "shippingAddress": "String" }`
-- Creates a new order (COD only). Deducts stock and snapshots product info.
+- **Body**: `{ "fullName": "String", "phone": "String", "shippingAddress": "String", "paymentMethod": "COD" | "VNPAY" }`
+- Creates a new order. Deducts stock and snapshots product info. Returns `paymentUrl` if VNPAY is selected.
 
 **GET** `/api/orders/my`
 - **Params**: `page`, `size`
@@ -151,3 +151,13 @@ Every HTTP response (both success and error) MUST adhere to the following JSON s
 
 **PUT** `/api/seller/orders/{id}/complete`
 - Transitions order status from SHIPPING to COMPLETED (marks product status as SOLD if quantity <= 0).
+
+### 9. Payment Operations
+
+**GET** `/api/payments/vnpay/callback`
+- **Params**: VNPay transaction query parameters (vnp_Amount, vnp_ResponseCode, vnp_SecureHash, etc.).
+- Public endpoint called by the frontend or VNPay server to verify transaction status and complete signature handshake.
+
+**GET** `/api/payments/order/{orderId}`
+- Fetches payment details for a specific order. Ensures owner validation or admin authority.
+

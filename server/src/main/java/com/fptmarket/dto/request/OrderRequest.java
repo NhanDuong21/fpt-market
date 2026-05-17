@@ -1,6 +1,8 @@
 package com.fptmarket.dto.request;
 
+import com.fptmarket.entity.PaymentMethod;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Getter
@@ -18,4 +20,7 @@ public class OrderRequest {
 
     @NotBlank(message = "Shipping address is required")
     private String shippingAddress;
+
+    @NotNull(message = "Payment method is required")
+    private PaymentMethod paymentMethod;
 }

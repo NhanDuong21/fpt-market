@@ -37,7 +37,10 @@ const OrderDetail = ({ order, onUpdate }) => {
             Đặt ngày {new Date(order.createdAt).toLocaleString('vi-VN')}
           </div>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 flex-wrap">
+          {order.paymentDetails && (
+            <OrderStatusBadge status={order.paymentDetails.paymentStatus} type="payment" />
+          )}
           <OrderStatusBadge status={order.status} />
           {canCancel && (
             <button 
@@ -102,8 +105,46 @@ const OrderDetail = ({ order, onUpdate }) => {
             <div className="space-y-3 mb-6">
               <div className="flex justify-between text-gray-500 font-medium">
                 <span>Phương thức</span>
-                <span className="font-bold text-gray-900">{order.paymentMethod}</span>
+                <span className="font-bold text-gray-900">{order.paymentMethod === 'VNPAY' ? 'Ví điện tử VNPay' : 'COD'}</span>
               </div>
+              {order.paymentDetails && (
+                <>
+                  <div className="flex justify-between text-gray-500 font-medium">
+                    <span>Thanh toán</span>
+                    <span className={`font-extrabold px-3 py-0.5 rounded-lg text-xs ${
+                      order.paymentDetails.paymentStatus === 'PAID' ? 'text-green-700 bg-green-50' : 
+                      order.paymentDetails.paymentStatus === 'PENDING' ? 'text-amber-700 bg-amber-50' : 
+                      'text-red-700 bg-red-50'
+                    }`}>
+                      {order.paymentDetails.paymentStatus === 'PAID' ? 'Đã thanh toán' : 
+                       order.paymentDetails.paymentStatus === 'PENDING' ? 'Chờ thanh toán' : 
+                       order.paymentDetails.paymentStatus === 'FAILED' ? 'Thanh toán thất bại' : 'Đã hủy'}
+                    </span>
+                  </div>
+                  {order.paymentDetails.transactionNo && (
+                    <div className="flex justify-between text-gray-500 font-medium">
+                      <span>Mã giao dịch</span>
+                      <span className="font-bold text-gray-700 text-xs">{order.paymentDetails.transactionNo}</span>
+                    </div>
+                  )}
+                  {order.paymentDetails.bankCode && (
+                    <div className="flex justify-between text-gray-500 font-medium">
+                      <span>Ngân hàng</span>
+                      <span className="font-bold text-gray-700 text-xs">{order.paymentDetails.bankCode}</span>
+                    </div>
+                  )}
+                  {order.paymentMethod === 'VNPAY' && order.paymentDetails.paymentStatus === 'PENDING' && order.paymentUrl && (
+                    <div className="pt-2">
+                      <a 
+                        href={order.paymentUrl}
+                        className="w-full inline-block text-center py-3 bg-red-600 hover:bg-red-700 text-white font-black text-sm rounded-xl transition-all shadow-md shadow-red-100"
+                      >
+                        TIẾP TỤC THANH TOÁN
+                      </a>
+                    </div>
+                  )}
+                </>
+              )}
               <div className="flex justify-between text-gray-500 font-medium">
                 <span>Vận chuyển</span>
                 <span className="font-bold text-green-600">Miễn phí</span>
@@ -116,6 +157,7 @@ const OrderDetail = ({ order, onUpdate }) => {
           </div>
         </div>
       </div>
+
     </div>
   );
 };

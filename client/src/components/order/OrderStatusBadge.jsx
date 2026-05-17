@@ -1,9 +1,14 @@
 import React from 'react';
-import { getOrderStatusLabel, getOrderStatusBadgeClass } from '@/utils/orderStatus';
+import { 
+  getOrderStatusLabel, 
+  getOrderStatusBadgeClass,
+  getPaymentStatusLabel,
+  getPaymentStatusBadgeClass 
+} from '@/utils/orderStatus';
 
-const OrderStatusBadge = ({ status }) => {
-  const label = getOrderStatusLabel(status);
-  const badgeClass = getOrderStatusBadgeClass(status);
+const OrderStatusBadge = ({ status, type = 'order' }) => {
+  const label = type === 'payment' ? getPaymentStatusLabel(status) : getOrderStatusLabel(status);
+  const badgeClass = type === 'payment' ? getPaymentStatusBadgeClass(status) : getOrderStatusBadgeClass(status);
 
   return (
     <span className={`px-3 py-1 text-xs font-black uppercase tracking-widest rounded-full border ${badgeClass}`}>
