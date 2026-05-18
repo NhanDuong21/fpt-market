@@ -1,16 +1,23 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
 import SearchBar from '@/components/common/SearchBar';
 import { ShoppingCart, User, LogOut, PlusCircle, LayoutDashboard, Settings } from 'lucide-react';
-import { useState } from 'react';
 
 export default function Header() {
+    const router = useRouter();
     const { user, logout } = useAuth();
     const { totalItems } = useCart();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     return (
         <header className="sticky top-0 z-50 bg-red-600 shadow-md">
@@ -28,11 +35,17 @@ export default function Header() {
 
                     {/* Right Side Actions */}
                     <div className="flex items-center gap-2 sm:gap-4">
-                        {/* Cart */}
-                        <Link href="/cart" className="p-2 text-white hover:bg-red-700 rounded-full transition-all relative">
-                            <ShoppingCart className="w-6 h-6" />
-                            {totalItems > 0 && (
-                                <span className="absolute -top-1 -right-1 min-w-[1.25rem] h-5 px-1 bg-white text-red-600 text-[10px] font-black rounded-full flex items-center justify-center border border-red-600 shadow-md">{totalItems}</span>
+                        {/* Cart Link with Badge UI */}
+                        <Link
+                            href={user ? "/cart" : "/login?redirect=/cart"}
+                            className="relative flex h-11 w-11 items-center justify-center rounded-full text-white transition hover:bg-white/15"
+                            aria-label="Giỏ hàng"
+                        >
+                            <ShoppingCart size={28} strokeWidth={2.5} />
+                            {mounted && Number(totalItems) > 0 && (
+                                <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full border border-red-500 bg-white px-1 text-xs font-bold text-red-600">
+                                    {totalItems > 99 ? "99+" : totalItems}
+                                </span>
                             )}
                         </Link>
 

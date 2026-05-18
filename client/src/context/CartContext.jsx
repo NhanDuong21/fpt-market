@@ -26,10 +26,16 @@ export const CartProvider = ({ children }) => {
     try {
       setLoading(true);
       const cartData = await cartService.getCart();
+      const fetchedItems = cartData?.items || [];
       setCart(cartData);
-      setCartItems(cartData?.items || []);
-      setTotalItems(cartData?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0);
-      setTotalAmount(cartData?.totalAmount || 0);
+      setCartItems(fetchedItems);
+      
+      // Robust fallback calculation
+      const calculatedTotalItems = fetchedItems.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
+      setTotalItems(calculatedTotalItems);
+      
+      const calculatedTotalAmount = fetchedItems.reduce((sum, item) => sum + (Number(item.price || 0) * Number(item.quantity || 0)), 0);
+      setTotalAmount(cartData?.totalAmount || calculatedTotalAmount);
     } catch (error) {
       console.error('Failed to fetch cart:', error);
     } finally {
@@ -48,10 +54,16 @@ export const CartProvider = ({ children }) => {
     }
     try {
       const cartData = await cartService.addItem(productId, quantity);
+      const fetchedItems = cartData?.items || [];
       setCart(cartData);
-      setCartItems(cartData?.items || []);
-      setTotalItems(cartData?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0);
-      setTotalAmount(cartData?.totalAmount || 0);
+      setCartItems(fetchedItems);
+      
+      const calculatedTotalItems = fetchedItems.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
+      setTotalItems(calculatedTotalItems);
+      
+      const calculatedTotalAmount = fetchedItems.reduce((sum, item) => sum + (Number(item.price || 0) * Number(item.quantity || 0)), 0);
+      setTotalAmount(cartData?.totalAmount || calculatedTotalAmount);
+      
       toast.success('Đã thêm vào giỏ hàng');
       return true;
     } catch (error) {
@@ -64,10 +76,15 @@ export const CartProvider = ({ children }) => {
   const updateQuantity = async (itemId, quantity) => {
     try {
       const cartData = await cartService.updateItem(itemId, quantity);
+      const fetchedItems = cartData?.items || [];
       setCart(cartData);
-      setCartItems(cartData?.items || []);
-      setTotalItems(cartData?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0);
-      setTotalAmount(cartData?.totalAmount || 0);
+      setCartItems(fetchedItems);
+      
+      const calculatedTotalItems = fetchedItems.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
+      setTotalItems(calculatedTotalItems);
+      
+      const calculatedTotalAmount = fetchedItems.reduce((sum, item) => sum + (Number(item.price || 0) * Number(item.quantity || 0)), 0);
+      setTotalAmount(cartData?.totalAmount || calculatedTotalAmount);
     } catch (error) {
       const message = error.response?.data?.message || 'Failed to update quantity';
       toast.error(message);
@@ -77,10 +94,16 @@ export const CartProvider = ({ children }) => {
   const removeItem = async (itemId) => {
     try {
       const cartData = await cartService.removeItem(itemId);
+      const fetchedItems = cartData?.items || [];
       setCart(cartData);
-      setCartItems(cartData?.items || []);
-      setTotalItems(cartData?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0);
-      setTotalAmount(cartData?.totalAmount || 0);
+      setCartItems(fetchedItems);
+      
+      const calculatedTotalItems = fetchedItems.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
+      setTotalItems(calculatedTotalItems);
+      
+      const calculatedTotalAmount = fetchedItems.reduce((sum, item) => sum + (Number(item.price || 0) * Number(item.quantity || 0)), 0);
+      setTotalAmount(cartData?.totalAmount || calculatedTotalAmount);
+      
       toast.success('Đã xóa khỏi giỏ hàng');
     } catch (error) {
       toast.error('Failed to remove item');

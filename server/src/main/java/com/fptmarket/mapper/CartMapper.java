@@ -14,6 +14,7 @@ import java.util.List;
 public interface CartMapper {
 
     @Mapping(target = "totalAmount", expression = "java(calculateTotal(cart))")
+    @Mapping(target = "totalItems", expression = "java(calculateTotalItems(cart))")
     CartResponse toResponse(Cart cart);
 
     @Mapping(target = "productId", source = "product.id")
@@ -30,6 +31,13 @@ public interface CartMapper {
         return cart.getItems().stream()
                 .map(this::calculateSubtotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    default Integer calculateTotalItems(Cart cart) {
+        if (cart == null || cart.getItems() == null) return 0;
+        return cart.getItems().stream()
+                .mapToInt(CartItem::getQuantity)
+                .sum();
     }
 
     default BigDecimal calculateSubtotal(CartItem item) {

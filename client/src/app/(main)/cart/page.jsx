@@ -8,7 +8,7 @@ import CartSummary from '@/components/cart/CartSummary';
 import EmptyState from '@/components/common/EmptyState';
 
 export default function CartPage() {
-  const { cart, loading, cartCount, fetchCart } = useCart();
+  const { cart, loading, fetchCart, cartItems, totalItems } = useCart();
 
   useEffect(() => {
     fetchCart();
@@ -22,7 +22,9 @@ export default function CartPage() {
     );
   }
 
-  if (!cart || cart.items.length === 0) {
+  // ONLY show the Empty State ("Giỏ hàng trống") if !loading and cartItems.length === 0.
+  // This prevents the UI from flashing an empty cart before the fetch completes.
+  if (!loading && cartItems.length === 0) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-16">
         <EmptyState
@@ -38,16 +40,16 @@ export default function CartPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="flex items-center gap-4 mb-10">
-        <h1 className="text-4xl font-black text-gray-900">Giỏ hàng</h1>
+        <h1 className="text-4xl font-black text-gray-900">Giỏ hàng ({totalItems})</h1>
         <span className="px-4 py-1 bg-red-600 text-white text-sm font-black rounded-full">
-          {cartCount}
+          {totalItems}
         </span>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
         {/* List of Items */}
         <div className="lg:col-span-2">
-          {cart.items.map(item => (
+          {cartItems.map(item => (
             <CartItem key={item.id} item={item} />
           ))}
           
@@ -67,8 +69,8 @@ export default function CartPage() {
         {/* Summary Sidebar */}
         <div>
           <CartSummary 
-            totalAmount={cart.totalAmount} 
-            totalItems={cartCount}
+            totalAmount={cart?.totalAmount || 0} 
+            totalItems={totalItems}
           />
         </div>
       </div>
