@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Logo from '@/components/common/Logo';
 
 export default function Footer() {
     return (
@@ -9,9 +10,7 @@ export default function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
                     {/* Brand */}
                     <div>
-                        <Link href="/" className="text-2xl font-black text-red-600 tracking-tighter mb-6 block">
-                            FPT-MARKET
-                        </Link>
+                        <Logo className="text-red-600 mb-6 block" />
                         <p className="text-gray-500 text-sm leading-relaxed">
                             Nền tảng mua bán nội bộ dành cho sinh viên FPT. Tiết kiệm hơn, an tâm hơn.
                         </p>
