@@ -58,8 +58,9 @@ const PaymentResultContent = () => {
       } finally {
         setLoading(false);
         if (fetchCart) {
-          fetchCart();
+          await fetchCart();
         }
+        router.refresh();
       }
     };
 
