@@ -149,7 +149,7 @@ const CheckoutForm = () => {
                 className="w-5 h-5 text-red-600 focus:ring-red-500 border-gray-300 accent-red-600"
               />
               <div className="w-12 h-12 bg-red-50 text-red-600 rounded-xl flex items-center justify-center overflow-hidden">
-                <img src="https://sandbox.vnpayment.vn/paymentv2/images/logo/vnpay_logo.png" className="w-10 h-auto object-contain" alt="VNPAY" />
+                <img src="https://play-lh.googleusercontent.com/htxII9LeOz8fRkdW0pcvOb88aoc448v9eoxnbKEPK98NLG6iX5mSd4dbu3PX9j36dwy9=w240-h480-rw" className="w-10 h-auto object-contain" alt="VNPAY" />
               </div>
               <div>
                 <div className="font-black text-gray-900 text-base uppercase tracking-tight">Thanh toán qua VNPay</div>
