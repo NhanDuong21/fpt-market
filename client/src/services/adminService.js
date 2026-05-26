@@ -42,6 +42,12 @@ const adminService = {
     getAllOrders: async (params) => {
         const response = await api.get('/api/admin/orders', { params });
         return response.data;
+    },
+
+    // Dashboard Stats
+    getDashboardStats: async () => {
+        const response = await api.get('/api/v1/admin/dashboard');
+        return response.data;
     }
 };
 

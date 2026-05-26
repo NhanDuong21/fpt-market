@@ -56,7 +56,7 @@ export default function AdminOrdersPage() {
                             <tbody className="divide-y divide-gray-50">
                                 {orders.length === 0 ? (
                                     <tr>
-                                        <td colSpan="5" className="px-8 py-20 text-center text-gray-400 font-bold italic">
+                                        <td colSpan="6" className="px-8 py-20 text-center text-gray-400 font-bold italic">
                                             Chưa có đơn hàng nào
                                         </td>
                                     </tr>

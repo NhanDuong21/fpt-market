@@ -47,7 +47,7 @@ public class SecurityConfig {
                         .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/products").hasAnyAuthority("USER", "ROLE_USER")
                         .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/products/**").hasAnyAuthority("USER", "ROLE_USER")
                         .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/products/**").hasAnyAuthority("USER", "ROLE_USER")
-                        .requestMatchers("/api/admin/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN")
+                        .requestMatchers("/api/admin/**", "/api/v1/admin/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN")
                         .requestMatchers("/api/seller/**").hasAnyAuthority("USER", "ROLE_USER")
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .anyRequest().authenticated()
