@@ -5,19 +5,50 @@ import { authService } from '../services/authService';
 import { saveTokens, saveUser, clearTokens, getUser, getRefreshToken } from '../utils/storage';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
+import api from '../services/api';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const router = useRouter();
 
+  const clearAuthData = () => {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("user");
+      // Expire local cookie variables explicitly
+      document.cookie = "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      document.cookie = "userRole=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      setUser(null);
+      setIsAuthenticated(false);
+  };
+
   useEffect(() => {
-    const loadUser = () => {
+    const loadUser = async () => {
       const storedUser = getUser();
-      if (storedUser) {
-        setUser(storedUser);
+      const token = localStorage.getItem('accessToken');
+      if (token) {
+        try {
+          await api.get('/api/v1/users/me');
+          if (storedUser) {
+            setUser(storedUser);
+            setIsAuthenticated(true);
+          }
+        } catch (error) {
+          if (error && error.message === 'AUTH_EXPIRED') {
+            clearAuthData();
+          } else {
+            if (storedUser) {
+              setUser(storedUser);
+              setIsAuthenticated(true);
+            }
+          }
+        }
+      } else {
+        clearAuthData();
       }
       setLoading(false);
     };
@@ -32,6 +63,7 @@ export const AuthProvider = ({ children }) => {
         saveTokens(accessToken, refreshToken);
         saveUser(userData);
         setUser(userData);
+        setIsAuthenticated(true);
         return true;
       }
     } catch (error) {
@@ -62,8 +94,7 @@ export const AuthProvider = ({ children }) => {
         console.error('Logout API failed', error);
       }
     }
-    clearTokens();
-    setUser(null);
+    clearAuthData();
     router.push('/login');
   };
 
@@ -73,7 +104,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, updateUser }}>
+    <AuthContext.Provider value={{ user, loading, isAuthenticated, login, register, logout, updateUser, clearAuthData }}>
       {children}
     </AuthContext.Provider>
   );

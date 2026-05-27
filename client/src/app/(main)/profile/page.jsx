@@ -12,7 +12,7 @@ import { toast } from 'react-toastify';
 import { Calendar, Loader } from 'lucide-react';
 
 export default function ProfilePage() {
-    const { user, loading: authLoading, updateUser } = useAuth();
+    const { user, loading: authLoading, updateUser, clearAuthData } = useAuth();
     const router = useRouter();
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -34,7 +34,13 @@ export default function ProfilePage() {
             setProfile(data);
         } catch (error) {
             console.error('Failed to fetch profile details:', error);
-            toast.error('Không thể tải thông tin tài khoản');
+            if (error && error.message === 'AUTH_EXPIRED') {
+                toast.error("Phiên đăng nhập đã hết hạn hoặc không còn hợp lệ. Vui lòng đăng nhập lại.");
+                clearAuthData();
+                router.replace('/login?redirect=/profile');
+            } else {
+                toast.error('Không thể tải thông tin tài khoản');
+            }
         } finally {
             setLoading(false);
         }
