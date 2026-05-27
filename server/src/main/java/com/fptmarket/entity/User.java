@@ -29,6 +29,8 @@ public class User {
 
     private String phone;
 
+    private String avatarUrl;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;

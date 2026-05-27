@@ -96,6 +96,9 @@ export default function Header() {
                                                     <Link href="/admin" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 transition-all">
                                                         <LayoutDashboard className="w-4 h-4" /> Dashboard
                                                     </Link>
+                                                    <Link href="/profile" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 transition-all">
+                                                        <User className="w-4 h-4" /> Hồ sơ
+                                                    </Link>
                                                     <Link href="/admin/categories" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 transition-all">
                                                         <Settings className="w-4 h-4" /> Quản lý danh mục
                                                     </Link>
@@ -203,6 +206,9 @@ export default function Header() {
                                 </Link>
                                 {user && (
                                     <>
+                                        <Link href="/profile" className="text-sm font-bold text-gray-700 hover:text-red-600 py-2 border-b border-gray-50 transition-all">
+                                            Hồ sơ của tôi
+                                        </Link>
                                         <Link href="/my-products" className="text-sm font-bold text-gray-700 hover:text-red-600 py-2 border-b border-gray-50 transition-all">
                                             Sản phẩm của tôi
                                         </Link>
