@@ -31,4 +31,4 @@ cd client
 npm install
 npm run dev
 ```
-The frontend is available at `http://localhost:3000`.
+The frontend is available at `http://localhost:3000`.     
