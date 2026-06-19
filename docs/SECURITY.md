@@ -44,4 +44,4 @@ To prevent unauthorized mass-scraping of product catalog and pricing data:
 ### 3. Vulnerability Probing Protection
 - **Mass-Scanning**: The `GlobalExceptionHandler` masks all internal 500 errors. No database structure, Spring Boot version, or stack trace is ever leaked.
 - **SQL Injection**: Prevented entirely by enforcing the use of Spring Data JPA and parameterized Hibernate queries. Raw string concatenation for SQL is strictly forbidden.
-- **XSS**: Next.js automatically sanitizes DOM injections. Spring Boot sanitizes incoming JSON payloads.
+- **XSS**: Next.js automatically sanitizes DOM injections. Spring Boot sanitizes incoming JSON payloads.     
