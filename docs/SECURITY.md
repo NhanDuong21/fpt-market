@@ -37,7 +37,7 @@ To protect the marketplace from malicious actors, the following strategies are r
 
 ### 2. Anti-Scraping Guards
 To prevent unauthorized mass-scraping of product catalog and pricing data:
-- Implementation of dynamic User-Agent validation.
+- Implementation of dynamic User-Agent validation.   
 - Aggressive rate limiting on public catalog endpoints (e.g., `/api/v1/products`).
 - (Optional Phase 2): IP blacklisting via WAF (Web Application Firewall) if anomalous volumetric traffic is detected from non-consumer datacenters.    
 
