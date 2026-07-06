@@ -14,7 +14,7 @@ build/
 # Java / Maven
 target/
 *.jar
-*.war
+*.war  
 *.ear
 *.class
 .mvn/
