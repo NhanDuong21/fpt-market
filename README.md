@@ -8,7 +8,7 @@ This repository contains the full stack architecture for FPT-Market.
 
 ## How to Run Phase 1 Locally
 
-### 1. Start Infrastructure   
+### 1. Start Infrastructure         
 Run the following at the root to start the MySQL database and Adminer GUI:
 ```bash
 docker-compose up -d
