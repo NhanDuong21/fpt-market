@@ -5,7 +5,7 @@ All RESTful API endpoints strictly follow a standard response wrapper format. Th
 ## Standard Response Wrapper
 
 Every HTTP response (both success and error) MUST adhere to the following JSON structure:
-
+   
 ```json
 {
   "success": true,          // boolean: indicates operation success/failure
