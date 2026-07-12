@@ -5,7 +5,7 @@ FPT-Market follows a strict monorepo architecture. This document outlines the hi
 ## Monorepo Layout
 
 The application is structured into three distinct, isolated environments at the root level:
-
+    
 ```text
 fpt-market/
 ├── client/
