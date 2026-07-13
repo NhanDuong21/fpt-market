@@ -3,7 +3,7 @@
 To ensure a consistent local development environment across the team, FPT-Market utilizes Docker and Docker Compose.
 
 ## Local Development Composition
-
+    
 The `docker-compose.yml` file located at the root of the project defines the required infrastructure services.
 
 ### Services Defined
