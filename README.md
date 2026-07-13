@@ -4,7 +4,7 @@ This repository contains the full stack architecture for FPT-Market.
 
 - `/client` - Next.js App Router Frontend
 - `/server` - Spring Boot REST API
-- `/docs` - System Documentation    
+- `/docs` - System Documentation        
 
 ## How to Run Phase 1 Locally
 
