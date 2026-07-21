@@ -2,7 +2,7 @@
 node_modules/
 .npm/
 
-# Next.js    
+# Next.js       
 .next/
 out/
 build/    
