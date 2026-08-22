@@ -15,7 +15,7 @@ docker-compose up -d
 ```
 Access Adminer at `http://localhost:8081`.
 
-### 2. Start Backend
+### 2. Start Backend.           
 Navigate to `/server` and start Spring Boot:
 ```bash
 cd server
